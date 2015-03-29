@@ -77,6 +77,10 @@ var brewingTools = angular.module('dashboard', ['kendo.directives', 'dashboard.c
                 controller: 'MRv1JobController',
                 templateUrl: '/assets/partial/mrv1job_timeline.html'
             }).
+            when('/mrv1job/jobconf', {
+                controller: 'MRv1JobController',
+                templateUrl: '/assets/partial/mrv1job_jobconf.html'
+            }).
             when('/mrv2job', {
                 redirectTo: '/mrv2job/overview'
             }).

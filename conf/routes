@@ -48,6 +48,7 @@ GET         /rest/mrv1job/longrunningjobs_last24hours        controllers.MRv1Job
 GET         /rest/mrv1job/jobsummary_last2weeks              controllers.MRv1JobController.jobSummaryOfLast2weeks()
 GET         /rest/mrv1job/jobstat_last2weeks                 controllers.MRv1JobController.jobStatOfLast2weeks()
 GET         /rest/mrv1job/jobhistory_perday                  controllers.MRv1JobController.jobhistoryPerDay(jobshortname:String, rundate:String)
+GET         /rest/mrv1job/jobconfstat                        controllers.MRv1JobController.jobConfStat(jobname:String ?="", start:String ?= "", end:String ?="")
 GET         /rest/mrv1job/jobcounters/:jobId                 controllers.MRv1JobController.getJobCounters(jobId:String)
 GET         /rest/mrv1job/tasks/:jobId                       controllers.MRv1JobController.listTasks(jobId:String, orderBy:String ?="startTime", order:String ?="asc")
 GET         /rest/mrv1job/gantt                              controllers.MRv1JobController.gantt(starttime:String,endtime:String,user:String ?="",jobname:String ?="", jobqueue:String ?="", jobstatus:String ?="")

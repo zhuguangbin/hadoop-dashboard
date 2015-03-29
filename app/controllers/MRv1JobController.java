@@ -29,7 +29,7 @@ public class MRv1JobController extends Controller {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateStr = sdf.format(date);
 
-        List<SqlRow> jobs = Ebean.createSqlQuery("select s.JOBID as jobId,s.JOBNAME as jobName, s.USER as user, s.JOB_QUEUE as jobQueue, s.JOB_PRIORITY as jobPriority, s.JOB_STATUS as jobStatus,s.SUBMIT_TIME, s.FINISH_TIME from mrv1_job_summary s where s.job_status='FAILED' and s.submit_time>='"+dateStr+"' order by jobid desc ").findList();
+        List<SqlRow> jobs = Ebean.createSqlQuery("select s.JOBID as jobId,s.JOBNAME as jobName, s.USER as user, s.JOB_QUEUE as jobQueue, s.JOB_PRIORITY as jobPriority, s.JOB_STATUS as jobStatus,s.SUBMIT_TIME, s.FINISH_TIME from mrv1_job_summary s where s.job_status='FAILED' and s.submit_time>='" + dateStr + "' order by jobid desc ").findList();
         JsonNode result = mapper.valueToTree(jobs);
 
         return ok(result);
@@ -117,11 +117,38 @@ public class MRv1JobController extends Controller {
         Date tomorrow = cal.getTime();
         String tomorrowStr = sdf.format(tomorrow);
 
-        String sql = "select s.jobid, s.user, s.job_queue, s.submit_time, TIMESTAMPDIFF(SECOND,submit_time,finish_time) as jobrunningtime,s.total_maps ,s.total_reduces, c.hdfs_bytes_read,c.hdfs_bytes_written , c.reduce_shuffle_bytes from mrv1_job_summary s join mrv1_job_counters c on s.jobid=c.jobid where s.SUBMIT_TIME>='" + rundate + "' and s.SUBMIT_TIME < '"+tomorrowStr+ "' and s.JOBNAME like '" + jobshortname + "%'";
+        String sql = "select s.jobid, s.user, s.job_queue, s.submit_time, TIMESTAMPDIFF(SECOND,submit_time,finish_time) as jobrunningtime,s.total_maps ,s.total_reduces, c.hdfs_bytes_read,c.hdfs_bytes_written , c.reduce_shuffle_bytes from mrv1_job_summary s join mrv1_job_counters c on s.jobid=c.jobid where s.SUBMIT_TIME>='" + rundate + "' and s.SUBMIT_TIME < '" + tomorrowStr + "' and s.JOBNAME like '" + jobshortname + "%'";
 
         List<SqlRow> jobs = Ebean.createSqlQuery(sql).findList();
         return ok(mapper.valueToTree(jobs));
 
+    }
+
+    @BodyParser.Of(BodyParser.Json.class)
+    public static Result jobConfStat(String jobname, String start, String end) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        String startDateStr = start;
+        String endDateStr = end;
+        if (start == null || "".equals(start)) {
+            Calendar cal = Calendar.getInstance();//使用默认时区和语言环境获得一个日历。
+            cal.add(Calendar.DAY_OF_MONTH, -1);//取当前日期的前一天.
+            Date date = cal.getTime();
+
+            startDateStr = sdf.format(date);
+        }
+        if (end == null || "".equals(end)) {
+            endDateStr = sdf.format(new Date());
+        }
+
+        String sql = "SELECT  distinct( case left(s.JOBNAME,1) when '[' then 'MAPRED' else left(s.JOBNAME,locate(':',s.JOBNAME)-1) end) as jobtype, (CASE SUBSTRING_INDEX(substring(s.JOBNAME,locate('[',s.JOBNAME)),'[',2) WHEN '' THEN 'UNDEFINED' ELSE SUBSTRING_INDEX(substring(s.JOBNAME,locate('[',s.JOBNAME)),'[',2) END) as project, (substring_index(s.JOBNAME, '[', 3)) as jobshortname,DATE_FORMAT(s.SUBMIT_TIME,'%Y-%m-%d') as rundate, f.SUBMIT_HOST, f.INPUTDIR, f.INPUTFORMAT, f.OUTPUTDIR, f.OUTPUTFORMAT,f.OUT_COMPRESS, f.OUT_COMPRESS_CODEC, SUBSTRING_INDEX(f.CHILD_JAVA_OPTS,' ', 1) as child_heapsize , f.CHILD_ULIMIT FROM  hadoop.mrv1_job_summary s LEFT OUTER JOIN hadoop.mrv1_job_conf f ON f.JOBID=s.JOBID WHERE s.SUBMIT_TIME >= '" + startDateStr + "' AND s.SUBMIT_TIME < '" + endDateStr + "' ";
+        if (jobname !=null || !"".equals(jobname)){
+            sql += " AND s.JOBNAME like '%"+jobname+"%' ";
+        }
+        sql +=" GROUP BY 1,2,3,4";
+        List<SqlRow> jobs = Ebean.createSqlQuery(sql).findList();
+        return ok(mapper.valueToTree(jobs));
     }
 
     @BodyParser.Of(BodyParser.Json.class)
