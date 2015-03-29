@@ -1,0 +1,134 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/mrv2job/overview">Overview</a></li>
+                        <li><a href="#/mrv2job/today">Today</a></li>
+                        <li><a href="#/mrv2job/last2weeks">2Weeks</a></li>
+                        <li><a href="#/mrv2job/failed">Failed</a></li>
+                        <li><a href="#/mrv2job/longrunning">LongRunning</a></li>
+                        <li><a href="#/mrv2job/timeline">Timeline</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+            <h3>最近24小时失败Job</h3>
+            <div id="failedjobs_last24hours"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var wnd ;
+
+    $(document).ready(function () {
+        $("#failedjobs_last24hours").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: "/rest/mrv2job/failedjobs_last24hours"
+                },
+                schema: {
+                    model: {
+                        fields: {
+                            starttime: {
+                                type: "date",
+                                parse: function (value) {
+                                    return kendo.toString(new Date(value), 'u');
+                                }
+                            },
+                            finishtime: {
+                                type: "date",
+                                parse: function (value) {
+                                    return kendo.toString(new Date(value), 'u');
+                                }
+                            }
+                        }
+                    }
+                },
+                pageSize: 20
+            },
+            height: 600,
+//            detailInit: tasksOfJob,
+//                dataBound: function() {
+//                    this.expandRow(this.tbody.find("tr.k-master-row").first());
+//                },
+            resizable: true,
+            groupable: true,
+            sortable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            columns: [
+                {
+                    field: "jobid",
+                    title: "jobid",
+                    width: 220
+                },
+                {
+                    field: "name",
+                    title: "jobName",
+                    width: 250
+                },
+                {
+                    field: "queue",
+                    title: "jobQueue"
+                },
+                {
+                    field: "user",
+                    title: "user"
+                },
+                {
+                    field: "uberized"
+                },
+                {
+                    field: "starttime",
+                    width: 110
+                },
+                {
+                    field: "finishtime",
+                    width: 110
+                },
+                {
+                    field: "mapstotal",
+                    width: 60
+                },
+                {
+                    field: "mapscompleted",
+                    width: 60
+                },
+                {
+                    field: "reducestotal",
+                    width: 60
+                },
+                {
+                    field: "reducescompleted",
+                    width: 60
+                },
+                {
+                    field: "diagnostics",
+                    width: 200
+                },
+                {command: { text: "View Details", click: showJobDetails }, title: " ", width: "140px" }
+            ]
+        });
+
+        function showJobDetails(e){
+            e.preventDefault();
+
+            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+            console.log(dataItem);
+            window.open("http://jt2dg.prod.mediav.com:19888/jobhistory/job/"+dataItem.jobid, '_blank');
+
+        }
+
+    });
+
+</script>
+
+
+</div>

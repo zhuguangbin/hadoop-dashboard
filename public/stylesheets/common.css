@@ -1,0 +1,51 @@
+
+span.requiredStar
+{
+	color: red;
+}
+
+div.spacedContent
+{
+	margin-top: 30px;
+}
+
+div.paddRowUpper
+{
+	margin-top: 10px;	
+}
+
+
+/* Recipe Builder page */
+.recipeProperties .k-numeric-wrap 
+{
+	width: 69px;
+}
+.recipeProperties .k-textbox
+{
+	width: 100px;
+}
+.recipeProperties .inputBox
+{
+	width: 185px;
+}
+
+.fade-hide, .fade-show {
+  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.3s;
+  -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.3s;
+  -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.3s;
+  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.3s;
+}
+
+.fade-hide {
+  opacity:1;
+}
+.fade-hide.fade-hide-active {
+  opacity:0;
+}
+
+.fade-show {
+  opacity:0;
+}
+.fade-show.fade-show-active {
+  opacity:1;
+}

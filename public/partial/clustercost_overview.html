@@ -1,0 +1,93 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/clustercost/overview">Overview</a></li>
+                        <li><a href="#/clustercost/byproject">By Project</a></li>
+                        <li><a href="#/clustercost/bill">Detail Bill</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+            <div id="cost_last2weeks" style="height: 400px"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var wnd ;
+
+    $(document).ready(function () {
+        $("#cost_last2weeks").kendoChart({
+            dataSource: {
+                transport: {
+                    read: "/rest/clustercost/summary"
+                }
+            },
+            chartArea: {
+                height: 400
+            },
+            title: {
+                text: "Hadoop Cluster Cost (RMB)"
+            },
+            legend: {
+                position: "top"
+            },
+            seriesDefaults: {
+                type: "column",
+                stack: true
+            },
+            series:
+                    [{
+                        field: "mrv1_cost",
+                        name: "MRv1 Cost",
+                        axis: "mrv1_cost"
+                    }, {
+                        field: "mrv2_cost",
+                        name: "MRv2 Cost",
+                        axis: "mrv2_cost"
+                    }],
+            seriesColors: ["lightgreen", "orange",],
+            categoryAxis: {
+                field: "rundate",
+                labels: {
+                    rotation: -90
+                },
+                majorGridLines: {
+                    visible: false
+                }
+            },
+            valueAxis: {
+                labels: {
+                    format: "N0"
+                },
+                line: {
+                    visible: false
+                }
+            },
+            valueAxes: [{
+                name: "mrv1_cost",
+                title: { text: "MRv1 Cost (RMB)",visible: false },
+                color: "lightgreen",
+                min: 0
+            },{
+                name: "mrv2_cost",
+                title: { text: "MRv2 Cost (RMB)",visible: false },
+                color: "orange",
+                min: 0
+            }],
+            tooltip: {
+                visible: true,
+                format: "N0"
+            }
+
+        });
+
+    });
+
+</script>
+
+</div>

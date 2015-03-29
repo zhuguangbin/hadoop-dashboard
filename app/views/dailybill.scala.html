@@ -1,0 +1,60 @@
+@(date:String, clusterCosts: List[ClusterCost])
+<html>
+    <header>
+        <style type="text/css">
+        .main {text-align: center;font-family: Arial;color: #003399;width:800px}
+        .title {text-align: center;font-family: Arial;color: #003399}
+        .content {text-align: left;font-family:Georgia, serif;}
+        .tg  {border-collapse:collapse;border-spacing:0;border-color:#aabcfe;margin:0px auto;width:800px}
+        .tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#669;background-color:#e8edff;border-top-width:1px;border-bottom-width:1px}
+        .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#039;background-color:#b9c9fe;border-top-width:1px;border-bottom-width:1px;}
+        .tg .tg-x1qw{background-color:#D2E4FC;font-size:14px;font-family:Impact, Charcoal, sans-serif !important;;text-align:center}
+        .tg .tg-pfc8{font-size:14px;font-family:Impact, Charcoal, sans-serif !important;;text-align:center}
+        </style>
+    </header>
+    <body>
+        <div class="main">
+            <h3 class="title">MV DATA BANK DAILY BILL</h3>
+            <p>
+            <p>
+            <p>
+            <p>
+            <br>
+
+            <div class="content">
+                Dear,
+            <p>
+                Thanks for your support for BigData Team. Your bill of [@date] as follows:
+            </div>
+            <p>
+            <p>
+            <table class="tg">
+                <tr>
+                    <th class="tg-pfc8">Project</th>
+                    <th class="tg-pfc8">Date</th>
+                    <th class="tg-pfc8">MRv1 Job Count</th>
+                    <th class="tg-pfc8">MRv1 (RMB)</th>
+                    <th class="tg-pfc8">MRv2 Job Count</th>
+                    <th class="tg-pfc8">MRv2 (RMB)</th>
+                    <th class="tg-pfc8">Total (RMB)</th>
+                </tr>
+
+            @for(costofProject <- clusterCosts){
+                <tr>
+                    <td class="tg-x1qw">@costofProject.getProject</td>
+                    <td class="tg-x1qw">@costofProject.getDate</td>
+                    <td class="tg-x1qw">@costofProject.getMrv1JobCount</td>
+                    <td class="tg-x1qw">@costofProject.getMrv1Cost</td>
+                    <td class="tg-x1qw">@costofProject.getMrv2JobCount</td>
+                    <td class="tg-x1qw">@costofProject.getMrv2Cost</td>
+                    <td class="tg-x1qw">@costofProject.getTotalCost</td>
+                </tr>
+            }
+            </table>
+            <div class="content">
+                see more  : <a href="http://hadoop.corp.mediav.com/#/clustercost/byproject" target="_blank">here</a> ,
+                detail bill : <a href="http://hadoop.corp.mediav.com/#/clustercost/bill" target="_blank">here</a>
+            </div>
+        </div>
+    </body>
+</html>

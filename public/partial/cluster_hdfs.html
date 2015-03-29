@@ -1,0 +1,152 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/cluster/hdfs">HDFS</a></li>
+                        <li><a href="#/cluster/mrv1">MRv1</a></li>
+                        <li><a href="#/cluster/yarn">YARN</a></li>
+                        <li><a href="#/cluster/sparkonyarn">Spark</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+            <h3><a href="http://nn1dg.prod.mediav.com:50070/" target="_blank">HDFS</a></h3>
+
+            <div class="row-fluid">
+                <div id="hdfs_nodes" class="span3"></div>
+                <div id="hdfs_capacity" class="span3"></div>
+                <div id="hdfs_blocks" class="span3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var wnd;
+    $(document).ready(function () {
+        $("#hdfs_nodes").kendoChart({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "/rest/hdfs/nodes",
+                        dataType: "json"
+                    }
+                }
+            },
+            chartArea: {
+                width: 350,
+                height: 350
+            },
+            title: {
+                text: "HDFS Cluster Nodes"
+            },
+            legend: {
+                position: "bottom"
+            },
+            seriesDefaults: {
+                type: "pie",
+                labels: {
+                    template: "#= category # - #= kendo.format('{0:P}', percentage)#",
+                    position: "outsideEnd",
+                    visible: true,
+                    background: "transparent"
+                }
+            },
+            series: [{
+                field: "value",
+                categoryField: "category",
+                padding: 0
+            }],
+            seriesColors: ["lightgreen", "orange"],
+            tooltip: {
+                visible: true,
+                template: "#= category # - #= value # - #= kendo.format('{0:P}', percentage) #"
+            }
+        });
+
+        $("#hdfs_capacity").kendoChart({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "/rest/hdfs/capacity",
+                        dataType: "json"
+                    }
+                }
+            },
+            chartArea: {
+                width: 350,
+                height: 350
+            },
+            title: {
+                text: "HDFS Capacity (GB)"
+            },
+            legend: {
+                position: "bottom"
+            },
+            seriesDefaults: {
+                type: "pie",
+                labels: {
+                    template: "#= category # - #= kendo.format('{0:P}', percentage)#",
+                    position: "outsideEnd",
+                    visible: true,
+                    background: "transparent"
+                }
+            },
+            series: [{
+                field: "value",
+                categoryField: "category",
+                padding: 0
+            }],
+            seriesColors: ["lightgreen", "Azure"],
+            tooltip: {
+                visible: true,
+                template: "#= category # - #= value # - #= kendo.format('{0:P}', percentage) #"
+            }
+        });
+
+        $("#hdfs_blocks").kendoChart({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "/rest/hdfs/blocks",
+                        dataType: "json"
+                    }
+                }
+            },
+            chartArea: {
+                width: 400,
+                height: 400
+            },
+            title: {
+                text: "HDFS Blocks"
+            },
+            legend: {
+                position: "bottom"
+            },
+            seriesDefaults: {
+                type: "pie",
+                labels: {
+                    template: "#= category # - #= kendo.format('{0:P}', percentage)#",
+                    position: "outsideEnd",
+                    visible: true,
+                    background: "transparent"
+                }
+            },
+            series: [{
+                field: "value",
+                categoryField: "category",
+                padding: 0
+            }],
+            seriesColors: ["lightgreen", "Azure", "red", "yellow", "Aqua", "Beige", "BurlyWood", "Coral", "DeepPink", "DarkRed"],
+            tooltip: {
+                visible: true,
+                template: "#= category # - #= value # - #= kendo.format('{0:P}', percentage) #"
+            }
+        });
+
+
+    });
+</script>

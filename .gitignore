@@ -1,0 +1,11 @@
+.project
+.classpath
+.idea/*
+.idea_modules/*
+hadoop-dashboard.iml
+.settings/*
+target/*
+project/project/*
+project/target/*
+logs/*
+

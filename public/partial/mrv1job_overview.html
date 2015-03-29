@@ -1,0 +1,154 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/mrv1job/overview">Overview</a></li>
+                        <li><a href="#/mrv1job/today">Today</a></li>
+                        <li><a href="#/mrv1job/last2weeks">2Weeks</a></li>
+                        <li><a href="#/mrv1job/failed">Failed</a></li>
+                        <li><a href="#/mrv1job/longrunning">LongRunning</a></li>
+                        <li><a href="#/mrv1job/timeline">Timeline</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+            <div id="jobsummary_last2weeks" style="height: 400px"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var wnd ;
+
+    $(document).ready(function () {
+        $("#jobsummary_last2weeks").kendoChart({
+            dataSource: {
+                transport: {
+                    read: "/rest/mrv1job/jobsummary_last2weeks"
+                }
+            },
+            chartArea: {
+                height: 400
+            },
+            title: {
+                text: "MRv1 Job"
+            },
+            legend: {
+                position: "top"
+            },
+            seriesDefaults: {
+                type: "column"
+//                stack: true
+            },
+            series:
+                    [{
+                        field: "success",
+                        name: "SUCCESS",
+                        axis: "success"
+                    }, {
+                        field: "killed",
+                        name: "KILLED",
+                        axis: "killed"
+                    }, {
+                        field: "failed",
+                        name: "FAILED",
+                        axis: "failed"
+                    }, {
+                        type: "line",
+                        field: "total_maps",
+                        name: "TOTAL MAPS",
+                        axis: "total_maps"
+                    },{
+                        type: "line",
+                        field: "total_reduces",
+                        name: "TOTAL REDUCES",
+                        axis: "total_reduces"
+                    },{
+                        type: "area",
+                        field: "hdfs_read_tb",
+                        name: "HDFS SCANNED TB",
+                        axis: "hdfs_read_tb"
+                    },{
+                        type: "area",
+                        field: "hdfs_written_tb",
+                        name: "HDFS WRITTEN TB",
+                        axis: "hdfs_written_tb"
+                    }],
+            seriesColors: ["lightgreen", "orange", "red", "LightSkyBlue", "Gold", "DarkRed", "Orchid"],
+            categoryAxis: {
+                field: "rundate",
+                labels: {
+                    rotation: -90
+                },
+                majorGridLines: {
+                    visible: false
+                },
+                axisCrossingValues: [0, 0, 0, 100, 100, 100, 100]
+            },
+            valueAxis: {
+                labels: {
+                    format: "N0"
+                },
+                line: {
+                    visible: false
+                }
+            },
+            valueAxes: [{
+                name: "success",
+                title: { text: "SUCCESS JOBCOUNT",visible: false },
+                color: "lightgreen",
+                min: 0
+            },{
+                name: "killed",
+                title: { text: "KILLED JOBCOUNT",visible: false },
+                color: "orange",
+                min: 0,
+                max: 200
+            },{
+                name: "failed",
+                title: { text: "FAILED JOBCOUNT",visible: false },
+                color: "red",
+                min: 0,
+                max: 200
+            },{
+                name: "total_maps",
+                title: { text: "TOTAL MAPS",visible: false },
+                color: "LightSkyBlue",
+                min: 0,
+                max: 2000000,
+                majorUnit: 200000
+            },{
+                name: "total_reduces",
+                title: { text: "TOTAL REDUCES",visible: false },
+                color: "Gold",
+                min: 0,
+                max: 2000000,
+                majorUnit: 200000
+            },{
+                name: "hdfs_read_tb",
+                title: { text: "HDFS SCANNED TB",visible: false },
+                color: "DarkRed",
+                min: 0,
+                max: 200
+            },{
+                name: "hdfs_written_tb",
+                title: { text: "HDFS WRITTEN TB",visible: false },
+                color: "Orchid",
+                min: 0,
+                max: 200
+            }],
+            tooltip: {
+                visible: true,
+                format: "N0"
+            }
+
+        });
+
+    });
+
+</script>
+
+</div>

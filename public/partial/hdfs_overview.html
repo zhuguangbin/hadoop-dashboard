@@ -1,0 +1,118 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/hdfs/overview">MVAD LOG</a></li>
+                        <li><a href="#/hdfs/viewer">HDFSViewer</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+            <div id="mvad_log"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#mvad_log").kendoChart({
+            dataSource: {
+                transport: {
+                    read: "/rest/hdfs/logsize"
+                }
+            },
+            chartArea: {
+                height: 400
+            },
+            title: {
+                text: "MVAD LOG SIZE (GB)"
+            },
+            legend: {
+                position: "top"
+            },
+            seriesDefaults: {
+                type: "column",
+                stack: true
+            },
+            series:
+                    [ {
+                        field: "_mvad_rawlog_dsp",
+                        name: "dsp"
+                    },{
+                        field: "_mvad_rawlog_dsp_logfilter",
+                        name: "dsp-logfilter"
+                    },{
+                        field: "_mvad_rawlog_dsp_sample",
+                        name: "dsp-sample"
+                    },{
+                        field: "_mvad_rawlog_dsp_parquet",
+                        name: "dsp-parquet"
+                    },{
+                        field: "_mvad_rawlog_exchange",
+                        name: "exchange"
+                    },{
+                        field: "_mvad_rawlog_dsp_extended",
+                        name: "exchange-extended"
+                    },{
+                        field: "_mvad_rawlog_ambition",
+                        name: "ambition"
+                    },{
+                        field: "_mvad_rawlog_ambition_sample",
+                        name: "ambition-sample"
+                    },{
+                        field: "_mvad_rawlog_ambition_parquet",
+                        name: "ambition-parquet"
+                    },{
+                        field: "_mvad_rawlog_torpedo",
+                        name: "torpedo"
+                    },{
+                        field: "_mvad_rawlog_mba",
+                        name: "mba"
+                    },{
+                        field: "_mvad_rawlog_user_behavior",
+                        name: "user-behavior"
+                    },{
+                        field: "_mvad_sessionlog_dspan",
+                        name: "dspan"
+                    },{
+                        field: "_mvad_sessionlog_dspan_parquet",
+                        name: "dspan-parquet"
+                    },{
+                        field: "_mvad_sessionlog_dspan_history_parquet",
+                        name: "dspan-history-parquet"
+                    }],
+            seriesColors: ["DodgerBlue", "DimGray", "FireBrick", "FloralWhite", "Fuchsia", "Gold", "Green", "HotPink", "Indigo", "Orange", "Red", "Teal" , "Aqua", "Brown", "Chartreuse"],
+            categoryAxis: {
+                field: "date",
+                labels: {
+                    rotation: -90
+                },
+                majorGridLines: {
+                    visible: false
+                }
+//                axisCrossingValues: [0, 0, 0, 100, 100, 100, 100]
+            },
+            valueAxis: {
+                labels: {
+                    format: "N0"
+                },
+                line: {
+                    visible: true
+                }
+            },
+            tooltip: {
+                visible: true,
+                format: "N0"
+            }
+
+        });
+    });
+
+</script>
+
+
+</div>

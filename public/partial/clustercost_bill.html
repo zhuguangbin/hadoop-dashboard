@@ -1,0 +1,348 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/clustercost/overview">Overview</a></li>
+                        <li><a href="#/clustercost/byproject">By Project</a></li>
+                        <li><a href="#/clustercost/bill">Detail Bill</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+            <form class="form-inline">
+                <label for="project">Project : </label><input id="project" type="text" class="input-medium" placeholder="Project">
+                <label for="start">Start: </label><input id="start" style="width: 220px"/>
+                <label for="end">End: </label><input id="end" style="width: 220px"/>
+
+                <button class="submitButton k-button" id="submit">Submit</button>
+            </form>
+            <div class="text-info">计算公式:    cost(RMB) = CPUTIME_HOUR * 0.2 + HDFS_READ_GB * 0.01 + HDFS_WRITTEN_GB * 0.03 + REDUCE_SHUFFLE_GB * 0.05</div>
+            <p>
+            <div id="costbill_detail"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var wnd ;
+
+    $(document).ready(function () {
+
+        function startChange() {
+            var startDate = start.value(),
+                    endDate = end.value();
+        }
+
+        function endChange() {
+            var endDate = end.value(),
+                    startDate = start.value();
+        }
+
+        var today = kendo.date.today();
+
+        var now = new Date();
+        var day = now.getDate();
+        var month = now.getMonth();
+        var year = now.getFullYear();
+        var hour = now.getHours();
+
+        var yestory = new Date(year, month, day-1);
+
+        var start = $("#start").kendoDatePicker({
+            value: yestory,
+            change: startChange
+        }).data("kendoDatePicker");
+
+        var end = $("#end").kendoDatePicker({
+            value: today,
+            change: endChange
+        }).data("kendoDatePicker");
+
+        var date = $("#date").kendoDatePicker({
+            value: yestory,
+            change: endChange
+        }).data("kendoDatePicker");
+
+
+        $("#submit").click(refreshGrid);
+
+        var startDate = kendo.toString(start.value(), "yyyy-MM-dd");
+        var endDate = kendo.toString(end.value(), "yyyy-MM-dd");
+
+        function refreshGrid(e) {
+            startDate = kendo.toString(start.value(), "yyyy-MM-dd");
+            endDate = kendo.toString(end.value(), "yyyy-MM-dd");
+            var project = $("#project").val();
+
+            var grid = $("#costbill_detail").data("kendoGrid");
+            grid.dataSource.transport.options.read.url = serviceRoot + "?start=" + startDate + "&end=" + endDate + "&project=" + project;
+            grid.dataSource.read();
+        }
+
+        var serviceRoot = "/rest/clustercost/detailbill";
+        $("#costbill_detail").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: serviceRoot+"?start=" + startDate + "&end=" + endDate
+                },
+                pageSize: 20,
+                group: {
+                    field: "project", aggregates: [
+                        { field: "project", aggregate: "count" },
+                        { field: "user", aggregate: "count" },
+                        { field: "jobshortname", aggregate: "count"},
+                        { field: "jobcount", aggregate: "sum"},
+                        { field: "cost", aggregate: "sum" },
+                        { field: "total_maps", aggregate: "sum" },
+                        { field: "total_reduces", aggregate: "sum" },
+                        { field: "cpu_milliseconds", aggregate: "sum" },
+                        { field: "total_hdfs_read_gb", aggregate: "sum" },
+                        { field: "total_hdfs_written_gb", aggregate: "sum" },
+                        { field: "total_reduce_shuffle_gb", aggregate: "sum" }
+                    ]
+                },
+
+                aggregate: [ { field: "user", aggregate: "count" },
+                    { field: "jobshortname", aggregate: "count" },
+                    { field: "jobcount", aggregate: "sum"},
+                    { field: "cost", aggregate: "sum" },
+                    { field: "total_maps", aggregate: "sum" },
+                    { field: "total_reduces", aggregate: "sum" },
+                    { field: "cpu_milliseconds", aggregate: "sum" },
+                    { field: "total_hdfs_read_gb", aggregate: "sum" },
+                    { field: "total_hdfs_written_gb", aggregate: "sum" },
+                    { field: "total_reduce_shuffle_gb", aggregate: "sum" }
+                ]
+            },
+            height: 600,
+//            detailInit: jobHistory,
+//                dataBound: function() {
+//                    this.expandRow(this.tbody.find("tr.k-master-row").first());
+//                },
+            resizable: true,
+            groupable: true,
+            sortable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            filterable: {
+                mode: "row"
+            },
+            columns: [
+                {
+                    field: "project",
+                    title: "Project",
+                    width: 100,
+                    aggregates: ["count"], groupHeaderTemplate: "project: #= value # (Count: #= count#)"
+                },
+                {
+                    field: "cluster",
+                    title: "Cluster",
+                    width: 80
+                },
+                {
+                    field: "user",
+                    title: "User",
+                    width: 80
+                },
+                {
+                    field: "jobshortname",
+                    title: "JobName",
+                    width: 250,
+                    aggregates: ["count"], footerTemplate: "Count: #=count#", groupFooterTemplate: "Count: #=count#"
+                },
+                {
+                    field: "rundate",
+                    title: "rundate",
+                    width: 100
+                },
+                {
+                    field: "cost",
+                    title: "Cost(RMB)",
+                    width: 100,
+                    aggregates: ["sum"], footerTemplate: "Sum: #=sum#", groupFooterTemplate: "Sum: #=sum#"
+                },
+                {
+                    field: "jobcount",
+                    title: "JOBCount",
+                    aggregates: ["sum"], footerTemplate: "Sum: #=sum#", groupFooterTemplate: "Sum: #=sum#"
+                },
+                {
+                    field: "total_maps",
+                    title: "Total Maps",
+                    aggregates: ["sum"], footerTemplate: "Sum: #=sum#", groupFooterTemplate: "Sum: #=sum#"
+                },
+                {
+                    field: "total_reduces",
+                    title: "Total Reduces",
+                    aggregates: ["sum"], footerTemplate: "Sum: #=sum#", groupFooterTemplate: "Sum: #=sum#"
+                },
+                {
+                    field: "cpu_milliseconds",
+                    title: "CPU(ms)",
+                    aggregates: ["sum"], footerTemplate: "Sum: #=sum#", groupFooterTemplate: "Sum: #=sum#"
+                },
+                {
+                    field: "total_hdfs_read_gb",
+                    title: "HDFS READ(GB)",
+                    aggregates: ["sum"], footerTemplate: "Sum: #=sum#", groupFooterTemplate: "Sum: #=sum#"
+                },
+                {
+                    field: "total_hdfs_written_gb",
+                    title: "HDFS WRITTEN(GB)",
+                    aggregates: ["sum"], footerTemplate: "Sum: #=sum#", groupFooterTemplate: "Sum: #=sum#"
+                },
+                {
+                    field: "total_reduce_shuffle_gb",
+                    title: "REDUCE SHUFFLE(GB)",
+                    aggregates: ["sum"], footerTemplate: "Sum: #=sum#", groupFooterTemplate: "Sum: #=sum#"
+                }
+//                {command: { text: "View Details", click: showJobDetails }, title: " ", width: "140px" }
+            ]
+        });
+        function jobHistory(e) {
+            $("<div/>").appendTo(e.detailCell).kendoChart({
+                dataSource: {
+                    transport: {
+                        read: "/rest/mrv1job/jobhistory?jobshortname=" + e.data.jobshortname + "&rundate="+ e.data.rundate
+                    },
+                    schema: {
+                        model: {
+                            fields: {
+                                submit_time: {
+                                    type: "date",
+                                    parse: function (value) {
+                                        return kendo.toString(new Date(value), 'u');
+                                    }
+                                },
+                                hdfs_bytes_read: {
+                                    type: "number",
+                                    parse: function (value) {
+                                        return value/1024/1024/1024;
+                                    }
+                                },
+                                hdfs_bytes_written: {
+                                    type: "number",
+                                    parse: function (value) {
+                                        return value/1024/1024/1024;
+                                    }
+                                },
+                                reduce_shuffle_bytes: {
+                                    type: "number",
+                                    parse: function (value) {
+                                        return value/1024/1024/1024;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                chartArea: {
+                    height: 400
+                },
+                title: {
+                    text: "Job History"
+                },
+                legend: {
+                    position: "top"
+                },
+                seriesDefaults: {
+                    type: "column"
+//                stack: true
+                },
+                series:
+                        [{
+                            type: "line",
+                            field: "total_maps",
+                            name: "MAP NUM",
+                            axis: "total_maps"
+                        }, {
+                            type: "line",
+                            field: "total_reduces",
+                            name: "REDUCE NUM",
+                            axis: "total_reduces"
+                        }, {
+                            type: "line",
+                            field: "jobrunningtime",
+                            name: "RUN TIME (Second)",
+                            axis: "jobrunningtime"
+                        }, {
+                            field: "hdfs_bytes_read",
+                            name: "HDFS READ BYTES (GB)",
+                            axis: "hdfs_bytes_read"
+                        },{
+                            field: "hdfs_bytes_written",
+                            name: "HDFS WRITTEN BYTES (GB)",
+                            axis: "hdfs_bytes_written"
+                        }, {
+                            field: "reduce_shuffle_bytes",
+                            name: "REDUCE SHUFFLE BYTES (GB)",
+                            axis: "reduce_shuffle_bytes"
+                        }],
+                seriesColors: ["lightgreen", "orange", "red", "LightSkyBlue", "Gold", "DarkRed"],
+                categoryAxis: {
+                    field: "jobid",
+                    labels: {
+                        rotation: -90
+                    },
+                    majorGridLines: {
+                        visible: false
+                    },
+                    axisCrossingValues: [0, 0, 0, 100, 100, 100]
+                },
+                valueAxis: {
+                    labels: {
+                        format: "N0"
+                    },
+                    line: {
+                        visible: false
+                    }
+                },
+                valueAxes: [{
+                    name: "total_maps",
+                    title: { text: "MAP" },
+                    color: "lightgreen",
+                    min: 0
+                },{
+                    name: "total_reduces",
+                    title: { text: "REDUCE" },
+                    color: "orange",
+                    min: 0
+                },{
+                    name: "jobrunningtime",
+                    title: { text: "RUN TIME (Second)" },
+                    color: "red",
+                    min: 0
+                },{
+                    name: "hdfs_bytes_read",
+                    title: { text: "HDFS READ BYTES (GB)" },
+                    color: "LightSkyBlue",
+                    min: 0
+                },{
+                    name: "hdfs_bytes_written",
+                    title: { text: "HDFS WRITTEN BYTES (GB)" },
+                    color: "Gold",
+                    min: 0
+                },{
+                    name: "reduce_shuffle_bytes",
+                    title: { text: "REDUCE SHUFFLE BYTES (GB)" },
+                    color: "DarkRed",
+                    min: 0
+                }],
+                tooltip: {
+                    visible: true,
+                    format: "N0"
+                }
+
+            });
+        }
+    });
+
+</script>
+
+</div>

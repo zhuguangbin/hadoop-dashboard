@@ -1,0 +1,244 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/hdfs/overview">MVAD LOG</a></li>
+                        <li><a href="#/hdfs/viewer">HDFSViewer</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+
+            <div class="row-fluid">
+                <div class="span9">
+                    <div id="query_form">
+                        <form class="form-inline">
+                            <label style="color: darkgreen">HDFS Viewer:</label>
+                            <label for="path">Path </label><input id="path" class="input-xxlarge" value="/">
+                            <button class="submitButton k-button" id="submit">Submit</button>
+                        </form>
+                    </div>
+                    <div id="file_status"></div>
+                </div>
+
+                <div class="span2">
+                    <h3>FileStatus</h3>
+                    <div id="content_summary" class="row-fluid">
+                        <div class="form-horizontal">
+                        <label for="content_path">Path: </label>
+
+                        <div id="content_path" style="color: darkred"></div>
+                            </div>
+                        <label for="directory_count">Directory Count: </label>
+
+                        <div id="directory_count" style="color: darkred"></div>
+                        <label for="file_count">File Count: </label>
+
+                        <div id="file_count" style="color: darkred"></div>
+                        <label for="size">Size: </label>
+
+                        <div id="size" style="color: darkred"></div>
+                        <label for="quota">Quota: </label>
+
+                        <div id="quota" style="color: darkred"></div>
+                        <label for="spaceConsumed">Space Consumed: </label>
+
+                        <div id="spaceConsumed" style="color: darkred"></div>
+                        <label for="spaceQuota">Space Quota: </label>
+
+                        <div id="spaceQuota" style="color: darkred"></div>
+                    </div>
+                    <div id="subdir_size"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#submit").click(submit);
+
+        var filestatusServiceBaseUrl = "/rest/hdfs/liststatus";
+
+        $("#file_status").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: filestatusServiceBaseUrl,
+                        dataType: "json"
+                    }
+                },
+                schema: {
+                    model: {
+                        id: "pathSuffix",
+                        fields: {
+                            pathSuffix: {nullable: false},
+                            parentId: {field: "parentPath", nullable: true},
+                            accessTime: {
+                                type: "date",
+                                parse: function (value) {
+                                    return kendo.toString(new Date(value), 'u');
+                                }
+                            },
+                            modificationTime: {
+                                type: "date",
+                                parse: function (value) {
+                                    return kendo.toString(new Date(value), 'u');
+                                }
+                            }
+                        }
+                    }
+                },
+                pageSize: 20
+            },
+            height: 600,
+            resizable: true,
+            groupable: true,
+            sortable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            filterable: {
+                mode: "row"
+            },
+            columns: [
+                {field: "type", expandable: true, title: "Type", width: 100},
+                {field: "pathSuffix", title: "Path", width: 200},
+                {field: "owner", expandable: true, title: "Owner", width: 100},
+                {field: "group", title: "Group", width: 100},
+                {field: "permission", title: "permission", width: 50},
+                {field: "length", title: "Size", width: 100},
+                {field: "blockSize", title: "blockSize", width: 50},
+                {field: "replication", title: "replication", width: 50},
+                {field: "accessTime", title: "accessTime", width: 100},
+                {field: "modificationTime", title: "modificationTime", width: 100}
+            ]
+        });
+
+        var duServiceBaseUrl = "/rest/hdfs/du";
+
+        $("#subdir_size").kendoChart({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: duServiceBaseUrl,
+                        dataType: "json"
+                    }
+                },
+                schema: {
+                    model: {
+                        fields: {
+                            size: {
+                                type: "number",
+                                parse: function (value) {
+                                    return value / 1024 / 1024 / 1024;
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            chartArea: {
+                width: 350,
+                height: 350
+            },
+            title: {
+                text: "Sub Directory Size (GB)"
+            },
+            legend: {
+                position: "bottom",
+                visible: false
+            },
+            seriesDefaults: {
+                type: "pie",
+                labels: {
+                    template: "#= category # - #= kendo.format('{0:P}', percentage)#",
+                    position: "outsideEnd",
+                    visible: true,
+                    background: "transparent"
+                }
+            },
+            series: [{
+                field: "size",
+                categoryField: "pathSuffix",
+                padding: 0
+            }],
+            tooltip: {
+                visible: true,
+                template: "#= category # - #= value # - #= kendo.format('{0:P}', percentage) #"
+            }
+        });
+
+
+        function showContentSummary(path) {
+            $.ajax(
+                    {
+                        type: 'GET',
+                        url: "/rest/hdfs/getcontentsummary?pathSuffix=" + path,
+                        dataType: 'json',
+                        success: function (result, textStatus) {
+
+                            $("#content_path").html(path);
+                            $("#directory_count").html(result['directoryCount']);
+                            $("#file_count").html(result['fileCount']);
+
+                            var size = result['length'];
+                            var quota = result['quota'];
+
+                            if (quota != "-1") {
+
+                                $("#size").html(size / 1024 / 1024 / 1024 + "  GB" + ", " + size / quota * 100 + " % used");
+                                $("#quota").html(quota / 1024 / 1024 / 1024 + "  GB");
+                            } else {
+                                $("#size").html(size / 1024 / 1024 / 1024 + "  GB");
+                                $("#quota").html("No Quota");
+                            }
+
+                            var spaceConsumed = result['spaceConsumed'];
+                            var spaceQuota = result['spaceQuota'];
+
+                            if (spaceQuota != "-1") {
+
+                                $("#spaceConsumed").html(spaceConsumed / 1024 / 1024 / 1024 + "  GB" + ", " + spaceConsumed / spaceQuota * 100 + " % used");
+                                $("#spaceQuota").html(spaceQuota / 1024 / 1024 / 1024 + "  GB");
+                            } else {
+                                $("#spaceConsumed").html(result['spaceConsumed'] / 1024 / 1024 / 1024 + "  GB");
+                                $("#spaceQuota").html("No Space Quota");
+                            }
+
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            console.log("error showing contentsummary of path: " + path)
+
+                        }
+                    });
+        }
+
+
+        function submit(e) {
+            var path = $("#path").val();
+            var treeList = $("#file_status").data("kendoGrid");
+            var pie = $("#subdir_size").data("kendoChart");
+
+            treeList.dataSource.transport.options.read.url = filestatusServiceBaseUrl + "?pathSuffix=" + path;
+            treeList.dataSource.read();
+
+            pie.dataSource.transport.options.read.url = duServiceBaseUrl + "?path=" + path;
+            pie.dataSource.read();
+
+            showContentSummary(path);
+        }
+    });
+
+</script>
+
+
+</div>

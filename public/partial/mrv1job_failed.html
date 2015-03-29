@@ -1,0 +1,115 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/mrv1job/overview">Overview</a></li>
+                        <li><a href="#/mrv1job/today">Today</a></li>
+                        <li><a href="#/mrv1job/last2weeks">2Weeks</a></li>
+                        <li><a href="#/mrv1job/failed">Failed</a></li>
+                        <li><a href="#/mrv1job/longrunning">LongRunning</a></li>
+                        <li><a href="#/mrv1job/timeline">Timeline</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+            <h3>最近24小时失败Job</h3>
+            <div id="failedjobs_last24hours"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var wnd ;
+
+    $(document).ready(function () {
+        $("#failedjobs_last24hours").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: "/rest/mrv1job/failedjobs_last24hours"
+                },
+                schema: {
+                    model: {
+                        fields: {
+                            submit_time: {
+                                type: "date",
+                                parse: function (value) {
+                                    return kendo.toString(new Date(value), 'u');
+                                }
+                            },
+                            finish_time: {
+                                type: "date",
+                                parse: function (value) {
+                                    return kendo.toString(new Date(value), 'u');
+                                }
+                            }
+                        }
+                    }
+                },
+                pageSize: 20
+            },
+            height: 600,
+//            detailInit: tasksOfJob,
+//                dataBound: function() {
+//                    this.expandRow(this.tbody.find("tr.k-master-row").first());
+//                },
+            resizable: true,
+            groupable: true,
+            sortable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            columns: [
+                {
+                    field: "jobid",
+                    title: "jobid",
+                    width: 220
+                },
+                {
+                    field: "jobname",
+                    title: "jobName",
+                    width: 250
+                },
+                {
+                    field: "jobqueue",
+                    title: "jobQueue"
+                },
+                {
+                    field: "user",
+                    title: "user"
+                },
+                {
+                    field: "jobpriority",
+                    title: "jobPriority",
+                    width: 100
+                },
+                {
+                    field: "jobstatus"
+                },
+                {
+                    field: "submit_time",
+                    width: 110
+                },
+                {
+                    field: "finish_time",
+                    width: 110
+                },
+                {command: { text: "View Details", click: showJobDetails }, title: " ", width: "140px" }
+            ]
+        });
+        function showJobDetails(e){
+            e.preventDefault();
+
+            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+            window.open("http://jt1dg.prod.mediav.com:50030/jobdetails.jsp?jobid="+dataItem.jobid+"&refresh=30", '_blank');
+
+        }
+    });
+
+</script>
+
+</div>

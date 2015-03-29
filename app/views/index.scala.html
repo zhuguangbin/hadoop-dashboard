@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html ng-app="dashboard">
+  <head>
+    <title>MVAD Hadoop DashBoard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+
+    <link href="/assets/stylesheets/common.css" rel="stylesheet">
+    <link href="/assets/stylesheets/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/assets/stylesheets/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="/assets/stylesheets/kendo.common.min.css" rel="stylesheet">
+    <link href="/assets/stylesheets/kendo.material.min.css" rel="stylesheet">
+    <link href="/assets/stylesheets/kendo.material.mobile.min.css" rel="stylesheet">
+    <link href="/assets/stylesheets/kendo.dataviz.min.css" rel="stylesheet">
+    <link href="/assets/stylesheets/kendo.dataviz.mobile.min.css" rel="stylesheet">
+    <link href="/assets/stylesheets/kendo.dataviz.material.min.css" rel="stylesheet">
+
+    <script src="/assets/javascripts/vendor/jquery-1.9.1.js"></script>
+    <script src="/assets/javascripts/vendor/bootstrap.min.js"></script>
+    <script src="/assets/javascripts/vendor/angular.js"></script>
+    <script src="/assets/javascripts/vendor/angular-resource.js"></script>
+    <script src="/assets/javascripts/vendor/jszip.min.js"></script>
+    <script src="/assets/javascripts/vendor/kendo.all.min.js"></script>
+    <script src="/assets/javascripts/vendor/angular-kendo.js"></script>
+    <script src="/assets/javascripts/app.js"></script>
+    <script src="/assets/javascripts/controllers.js"></script>
+  </head>
+  <body>
+
+    <div class="container-fluid">
+
+      <h1>MVAD Hadoop DashBoard</h1>
+
+      <div ng-controller="MenuController" class="navbar">
+        <div class="navbar-inner">
+          <a class="brand" href="#">Menu</a>
+          <ul class="nav">
+            <li ng-class="{active: isActive(menuItem.url)}" ng-repeat="menuItem in menuItems">
+              <a ng-href="#{{menuItem.url}}">{{menuItem.name}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div ng-view>
+      </div>
+    </div> <!-- End of page container div -->
+
+  </body>
+</html>

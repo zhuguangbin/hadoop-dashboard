@@ -1,0 +1,205 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/yarnapps/overview">Overview</a></li>
+                        <li><a href="#/yarnapps/timeline">Timeline</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+            <form class="form-inline">
+                <label for="start">Start: </label><input id="start" style="width: 220px"/>
+                <label for="end">End : </label><input id="end" style="width: 220px"/>
+                <label for="user">User: </label><input id="user" type="text" class="input-small" placeholder="User">
+                <label for="name">App Name : </label><input id="name" type="text" class="input-small" placeholder="support fuzzy query">
+                <label for="queue">Queue: </label>
+                <select id="queue" class="input-small">
+                    <option value="">--queue--</option>
+                    <option>default</option>
+                    <option>production</option>
+                    <option>machinelearning</option>
+                    <option>etl</option>
+                </select>
+                <label for="state">Status : </label>
+                <select id="state" class="input-small">
+                    <option value="">--status--</option>
+                    <option>RUNNING</option>
+                    <option>FINISHED</option>
+                    <option>KILLED</option>
+                </select>
+                <label for="finalStatus">finalStatus : </label>
+                <select id="finalStatus" class="input-small">
+                    <option value="">--finalStatus--</option>
+                    <option>SUCCESS</option>
+                    <option>FAILED</option>
+                    <option>KILLED</option>
+                </select>
+
+                <label>cluster : </label>
+                <select id="cluster" class="input-small">
+                    <option value="">--cluster--</option>
+                    <option selected="selected">Yarn</option>
+                    <option>SparkonYarn</option>
+                </select>
+
+                <button class="submitButton k-button" id="submit">Submit</button>
+            </form>
+
+            <div id="yarnapps_timeline"></div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+
+        function startChange() {
+            var startDate = start.value(),
+                    endDate = end.value();
+        }
+
+        function endChange() {
+            var endDate = end.value(),
+                    startDate = start.value();
+        }
+
+        var today = kendo.date.today();
+
+        var now = new Date();
+        var day = now.getDate();
+        var month = now.getMonth();
+        var year = now.getFullYear();
+        var hour = now.getHours();
+
+        var onehourago = new Date(year, month, day, hour - 1);
+
+        var start = $("#start").kendoDateTimePicker({
+            value: onehourago,
+            change: startChange
+        }).data("kendoDateTimePicker");
+
+        var end = $("#end").kendoDateTimePicker({
+            value: now,
+            change: endChange
+        }).data("kendoDateTimePicker");
+
+//        start.max(end.value());
+//        end.min(start.value());
+
+        $("#submit").click(submit);
+
+        var starttime = onehourago.getTime();
+        var endtime = now.getTime();
+
+
+        function submit(e) {
+            var starttime = start.value().getTime();
+            var endtime = end.value().getTime();
+            var user = $("#user").val();
+            var name = $("#name").val();
+            var queue = $("#queue").val();
+            var state = $("#state").val();
+            var finalStatus = $("#finalStatus").val();
+            var cluster = $("#cluster").val();
+            var grid = $("#yarnappstimeline").data("kendoGantt");
+
+            var serviceURL = "/rest/yarn/apps";
+
+            if( cluster == "SparkonYarn"){
+                serviceURL = "/rest/sparkonyarn/apps"
+            }
+
+            tasksDataSource.transport.options.read.url = serviceURL + "?startedTimeBegin=" + starttime + "&startedTimeEnd=" + endtime + "&user=" + user + "&name=" + name + "&queue=" + queue + "&state=" + state + "&finalStatus=" + finalStatus;
+            tasksDataSource.read();
+        }
+
+
+        var serviceRoot = "/rest/yarn/apps";
+
+        var tasksDataSource = new kendo.data.GanttDataSource({
+            transport: {
+                read: serviceRoot + "?startedTimeBegin=" + starttime + "&startedTimeEnd=" + endtime
+            },
+            schema: {
+                model: {
+                    id: "id",
+                    fields: {
+                        id: { from: "id", type: "string" },
+//                        orderId: { from: "orderID", type: "number", validation: { required: true } },
+//                        parentId: { from: "parentID", type: "string", defaultValue: null, validation: { required: true } },
+                        start: {
+                            from: "startedTime",
+                            type: "date",
+                            parse: function (value) {
+                                return kendo.toString(new Date(value));
+                            }
+                        },
+                        end: {
+                            from: "finishedTime",
+                            type: "date",
+                            parse: function (value) {
+                                return kendo.toString(new Date(value));
+                            }
+                        },
+                        title: { from: "name", defaultValue: "", type: "string" },
+                        percentComplete: { from: "progress", type: "number" },
+                        summary: { from: "summary", type: "boolean" },
+                        expanded: { from: "expanded", type: "boolean", defaultValue: true }
+                    }
+                }
+            },
+            sort: { field: "start", dir: "asc" }
+        });
+
+        $("#yarnapps_timeline").kendoGantt({
+            dataSource: tasksDataSource,
+//                dependencies: dependenciesDataSource,
+            views: [
+                { type: "day", selected: true},
+                { type: "week" },
+                { type: "month" }
+            ],
+            columns: [
+                { field: "id", title: "ID", width: 200, sortable: true, resizable: true },
+                { field: "title", title: "Title", width: 200, sortable: true },
+                { field: "start", title: "Start Time", format: "{0:yyyy/MM/dd HH:mm:ss}", width: 180, sortable: true },
+                { field: "end", title: "End Time", format: "{0:yyyy/MM/dd HH:mm:ss}", width: 180, sortable: true }
+            ],
+            listWidth: 750,
+            height: 600,
+
+            showWorkHours: false,
+            showWorkDays: false,
+            snap: false,
+            navigatable: true,
+
+            change: onChange
+        });
+
+        $(document.body).keydown(function(e) {
+            if (e.altKey && e.keyCode == 87) {
+                var gantt = $("#gantt").data("kendoGantt");
+                gantt.list.content.find("table").focus();
+            }
+        });
+    });
+
+    function onChange(e) {
+        var gantt = e.sender;
+        var selection = gantt.select();
+
+        if (selection.length) {
+            var dataItem = gantt.dataItem(selection);
+            window.open(dataItem.trackingUrl, '_blank');
+        }
+    }
+</script>
+
+
+</div>

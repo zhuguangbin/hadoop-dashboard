@@ -1,0 +1,192 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/cluster/hdfs">HDFS</a></li>
+                        <li><a href="#/cluster/mrv1">MRv1</a></li>
+                        <li><a href="#/cluster/yarn">YARN</a></li>
+                        <li><a href="#/cluster/sparkonyarn">Spark</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+            <h3><a href="http://jt3dg.prod.mediav.com:8088/" target="_blank">Yarn</a></h3>
+            <div class="row-fluid">
+                <div id="yarn_nodes" class="span3"></div>
+                <div id="yarn_vcores" class="span3"></div>
+                <div id="yarn_memory" class="span3"></div>
+                <div id="yarn_appSummary" class="span3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var wnd;
+    $(document).ready(function () {
+
+        $("#yarn_nodes").kendoChart({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "/rest/yarn/nodes",
+                        dataType: "json"
+                    }
+                }
+            },
+            chartArea: {
+                width: 350,
+                height: 350
+            },
+            title: {
+                text: "Yarn Cluster Nodes"
+            },
+            legend: {
+                position: "bottom"
+            },
+            seriesDefaults: {
+                type: "pie",
+                labels: {
+                    template: "#= category # - #= kendo.format('{0:P}', percentage)#",
+                    position: "outsideEnd",
+                    visible: true,
+                    background: "transparent"
+                }
+            },
+            series: [{
+                field: "value",
+                categoryField: "category",
+                padding: 0
+            }],
+            seriesColors: ["lightgreen", "orange"],
+            tooltip: {
+                visible: true,
+                template: "#= category # - #= value # - #= kendo.format('{0:P}', percentage) #"
+            }
+        });
+
+        $("#yarn_vcores").kendoChart({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "/rest/yarn/vcores",
+                        dataType: "json"
+                    }
+                }
+            },
+            chartArea: {
+                width: 350,
+                height: 350
+            },
+            title: {
+                text: "Yarn Cluster vCores"
+            },
+            legend: {
+                position: "bottom"
+            },
+            seriesDefaults: {
+                type: "pie",
+                labels: {
+                    template: "#= category # - #= kendo.format('{0:P}', percentage)#",
+                    position: "outsideEnd",
+                    visible: true,
+                    background: "transparent"
+                }
+            },
+            series: [{
+                field: "value",
+                categoryField: "category",
+                padding: 0
+            }],
+            seriesColors: ["lightgreen", "Azure"],
+            tooltip: {
+                visible: true,
+                template: "#= category # - #= value # - #= kendo.format('{0:P}', percentage) #"
+            }
+        });
+
+        $("#yarn_memory").kendoChart({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "/rest/yarn/memory",
+                        dataType: "json"
+                    }
+                }
+            },
+            chartArea: {
+                width: 350,
+                height: 350
+            },
+            title: {
+                text: "Yarn Cluster Memory (MB)"
+            },
+            legend: {
+                position: "bottom"
+            },
+            seriesDefaults: {
+                type: "pie",
+                labels: {
+                    template: "#= category # - #= kendo.format('{0:P}', percentage)#",
+                    position: "outsideEnd",
+                    visible: true,
+                    background: "transparent"
+                }
+            },
+            series: [{
+                field: "value",
+                categoryField: "category",
+                padding: 0
+            }],
+            seriesColors: ["lightgreen", "Azure"],
+            tooltip: {
+                visible: true,
+                template: "#= category # - #= value # - #= kendo.format('{0:P}', percentage) #"
+            }
+        });
+
+        $("#yarn_appSummary").kendoChart({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "/rest/yarn/appSummary",
+                        dataType: "json"
+                    }
+                }
+            },
+            chartArea: {
+                width: 350,
+                height: 350
+            },
+            title: {
+                text: "Yarn Apps"
+            },
+            legend: {
+                position: "bottom"
+            },
+            seriesDefaults: {
+                type: "pie",
+                labels: {
+                    template: "#= category # - #= kendo.format('{0:P}', percentage)#",
+                    position: "outsideEnd",
+                    visible: true,
+                    background: "transparent"
+                }
+            },
+            series: [{
+                field: "value",
+                categoryField: "category",
+                padding: 0
+            }],
+            seriesColors: ["lightgreen", "snow", "yellow", "red"],
+            tooltip: {
+                visible: true,
+                template: "#= category # - #= value # - #= kendo.format('{0:P}', percentage) #"
+            }
+        });
+
+    });
+</script>

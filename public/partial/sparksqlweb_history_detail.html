@@ -1,0 +1,330 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/sparksqlweb/history/overview">Overview</a></li>
+                        <li><a href="#/sparksqlweb/history/detail">Detail</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+            <h3>SparkSQL History 详单</h3>
+            <form class="form-inline">
+                <label for="start">Start : </label><input id="start" style="width: 220px"/>
+                <label for="end">End : </label><input id="end" style="width: 220px"/>
+                <label for="user">User : </label><input id="user" type="text" class="input-small" placeholder="User">
+                <label for="retcode">Status : </label>
+                <select id="retcode" class="input-small">
+                    <option value="">--status--</option>
+                    <option value="0">SUCCESS</option>
+                    <option value="1">SQLException</option>
+                    <option value="2">UnknownException</option>
+                </select>
+
+                <button class="submitButton k-button" id="submit">Submit</button>
+            </form>
+            <div id="sparksql_history"></div>
+
+            <div id="history_result">
+                <h3>Result: </h3>
+                <label for="sqlstr">SQL: </label><div id="sqlstr" class="text-info"></div>
+                <label for="message">Message: </label><div id="message" class="text-info"></div>
+                <label for="result">Result: </label><div id="result"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+$(document).ready(function () {
+
+    $("#history_result").hide();
+
+    function startChange() {
+        var startDate = start.value(),
+                endDate = end.value();
+    }
+
+    function endChange() {
+        var endDate = end.value(),
+                startDate = start.value();
+    }
+
+    var today = kendo.date.today();
+
+    var now = new Date();
+    var day = now.getDate();
+    var month = now.getMonth();
+    var year = now.getFullYear();
+    var hour = now.getHours();
+
+    var onehourago = new Date(year, month, day, hour - 1);
+
+    var start = $("#start").kendoDateTimePicker({
+        value: onehourago,
+        change: startChange
+    }).data("kendoDateTimePicker");
+
+    var end = $("#end").kendoDateTimePicker({
+        value: now,
+        change: endChange
+    }).data("kendoDateTimePicker");
+
+//        start.max(end.value());
+//        end.min(start.value());
+
+    $("#submit").click(submit);
+
+    var starttime = kendo.toString(start.value(), "yyyyMMddHHmmss");
+    var endtime = kendo.toString(end.value(), "yyyyMMddHHmmss");
+
+    function submit(e) {
+        var starttime = kendo.toString(start.value(), "yyyyMMddHHmmss");
+        var endtime = kendo.toString(end.value(), "yyyyMMddHHmmss");
+        var user = $("#user").val();
+        var retcode = $("#retcode").val();
+        var grid = $("#sparksql_history").data("kendoGrid");
+
+        grid.dataSource.transport.options.read.url = serviceRoot + "?startedTimeBegin=" + starttime + "&startedTimeEnd=" + endtime + "&user=" + user + "&retcode="+retcode;
+        grid.dataSource.read();
+    }
+
+
+    var serviceRoot = "/rest/sparksql/history";
+
+    $("#sparksql_history").kendoGrid({
+        dataSource: {
+            transport: {
+                read: serviceRoot + "?startedTimeBegin=" + starttime + "&startedTimeEnd=" + endtime,
+                dataType: "json"
+            },
+            schema: {
+                model: {
+                    fields: {
+                        startTime: {
+                            type: "date",
+                            parse: function (value) {
+                                return kendo.toString(new Date(value), 'u');
+                            }
+                        },
+                        finishTime: {
+                            type: "date",
+                            parse: function (value) {
+                                return kendo.toString(new Date(value), 'u');
+                            }
+                        }
+                    }
+                }
+            },
+            pageSize: 50
+        },
+        height: 600,
+//            detailInit: appDetail,
+//                dataBound: function() {
+//                    this.expandRow(this.tbody.find("tr.k-master-row").first());
+//                },
+        resizable: true,
+        sortable: true,
+        pageable: {
+            refresh: true,
+            pageSizes: true,
+            buttonCount: 5
+        },
+
+        columns: [
+            {
+                field: "id",
+                title: "ID",
+                width: 50
+            },
+            {
+                field: "user",
+                title: "User",
+                width: 80
+            },
+            {
+                field: "sqlstr",
+                title: "SQL"
+
+            },
+            {
+                field: "startTime",
+                title: "Start Time",
+                width: 110
+            },
+            {
+                field: "finishTime",
+                title: "Finish Time",
+                width: 110
+            },
+            {
+                field: "retcode",
+                title: "Return Code",
+                width: 50
+            },
+            {
+                field: "message",
+                title: "Message",
+                width: 300
+            },
+            {command: { text: "Show Result", click: showResult }, title: " ", width: "140px" }
+        ]
+    });
+});
+
+
+var gridData = [];
+generateGrid(gridData);
+
+function generateModel(gridData) {
+    var model = {};
+    model.id = "ID";
+    var fields = {};
+    for (var property in gridData) {
+        var propType = typeof gridData[property];
+
+        if (propType == "number") {
+            fields[property] = {
+                type: "number",
+                validation: {
+                    required: true
+                }
+            };
+        } else if (propType == "boolean") {
+            fields[property] = {
+                type: "boolean",
+                validation: {
+                    required: true
+                }
+            };
+//                } else if (propType == "string") {
+//                    var parsedDate = kendo.parseDate(gridData[property]);
+//                    if (parsedDate) {
+//                        fields[property] = {
+//                            type: "date",
+//                            validation: {
+//                                required: true
+//                            }
+//                        };
+//                        dateFields.push(property);
+//                    } else {
+//                        fields[property] = {
+//                            validation: {
+//                                required: true
+//                            }
+//                        };
+//                    }
+        } else {
+            fields[property] = {
+                validation: {
+                    required: true
+                }
+            };
+        }
+
+    }
+    model.fields = fields;
+
+    return model;
+}
+
+function generateSchema(gridData) {
+
+    var schema = {};
+    var parseFunction;
+    var dateFields = [];
+
+    var model = generateModel(gridData[0]);
+    if (dateFields.length > 0) {
+        parseFunction = function (response) {
+            for (var i = 0; i < response.length; i++) {
+                for (var fieldIndex = 0; fieldIndex < dateFields.length; fieldIndex++) {
+                    var record = response[i];
+                    record[dateFields[fieldIndex]] = kendo.parseDate(record[dateFields[fieldIndex]]);
+                }
+            }
+            return response;
+        };
+    }
+
+    schema.model = model;
+//            schema.parse = parseFunction;
+
+    return schema;
+}
+
+function generateGrid(gridData) {
+    var schema = generateSchema(gridData);
+    var grid = $("#result").kendoGrid({
+        toolbar: ["excel"],
+        excel: {
+            allPages: true,
+            fileName: "result.xlsx",
+            filterable: true
+        },
+
+        dataSource: {
+            data: gridData,
+            schema: schema,
+            pageSize: 100
+        },
+        height: 700,
+        resizable: true,
+        groupable: true,
+//                sortable: true,
+        pageable: {
+            refresh: true,
+            pageSizes: true,
+            buttonCount: 5
+        },
+        filterable: {
+            mode: "row"
+        },
+        columnMenu: true
+    });
+}
+
+function showResult(e) {
+    e.preventDefault();
+
+    $("#history_result").show();
+    // destroy grid of last result
+    $('#result').data().kendoGrid.destroy();
+    $('#result').empty();
+
+    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+    $.ajax(
+            {
+                type: 'GET',
+                url: '/assets/results/' + dataItem.resultFile,
+                dataType: 'json',
+                success: function (result, textStatus) {
+                    var retcode = result['retcode']
+                    if (retcode == 0) {
+                        $("#sqlstr").html(dataItem.sqlstr);
+                        $("#message").html(result['message']);
+
+                        generateGrid(result['result']);
+
+                    } else {
+                        $("#sqlstr").html(dataItem.sqlstr);
+                        $("#message").html(result['message']);
+                        generateGrid([]);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#message").html(errorThrown);
+                    generateGrid([]);
+                }
+            });
+}
+
+</script>
+
+
+</div>

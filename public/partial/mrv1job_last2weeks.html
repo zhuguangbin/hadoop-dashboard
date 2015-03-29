@@ -1,0 +1,268 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/mrv1job/overview">Overview</a></li>
+                        <li><a href="#/mrv1job/today">Today</a></li>
+                        <li><a href="#/mrv1jobs/last2weeks">2Weeks</a></li>
+                        <li><a href="#/mrv1job/failed">Failed</a></li>
+                        <li><a href="#/mrv1job/longrunning">LongRunning</a></li>
+                        <li><a href="#/mrv1job/timeline">Timeline</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+            <h3>过去两周运行情况</h3>
+            <div id="jobstat_last2weeks"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var wnd ;
+
+    $(document).ready(function () {
+        $("#jobstat_last2weeks").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: "/rest/mrv1job/jobstat_last2weeks"
+                },
+                schema: {
+                    model: {
+                        fields: {
+                            submitTime: {
+                                type: "date",
+                                parse: function (value) {
+                                    return kendo.toString(new Date(value), 'u');
+                                }
+                            },
+                            lauchTime: {
+                                type: "date",
+                                parse: function (value) {
+                                    return kendo.toString(new Date(value), 'u');
+                                }
+                            },
+                            finishTime: {
+                                type: "date",
+                                parse: function (value) {
+                                    return kendo.toString(new Date(value), 'u');
+                                }
+                            }
+                        }
+                    }
+                },
+                pageSize: 20
+            },
+            height: 600,
+            detailInit: jobHistory,
+//                dataBound: function() {
+//                    this.expandRow(this.tbody.find("tr.k-master-row").first());
+//                },
+            resizable: true,
+            groupable: true,
+            sortable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            filterable: {
+                mode: "row"
+            },
+            columns: [
+                {
+                    field: "jobtype",
+                    title: "Job Type",
+                    width: 80
+                },
+                {
+                    field: "project",
+                    title: "Project",
+                    width: 100
+                },
+                {
+                    field: "jobshortname",
+                    title: "Job ShortName",
+                    width: 250
+                },
+                {
+                    field: "rundate",
+                    title: "rundate"
+                },
+                {
+                    field: "user",
+                    title: "user"
+                },
+                {
+                    field: "job_queue",
+                    title: "job_queue"
+                },
+                {
+                    field: "jobcount"
+                },
+                {
+                    field: "jobrunningtime",
+                    width: 110
+                },
+                {
+                    field: "avg_maps"
+                },
+                {
+                    field: "avg_reduce"
+                },
+                {
+                    field: "avg_hdfs_bytes_read"
+                },
+                {
+                    field: "avg_hdfs_bytes_written"
+                },
+                {
+                    field: "avg_reduce_shuffle_bytes"
+                }
+//                {command: { text: "View Details", click: showJobDetails }, title: " ", width: "140px" }
+            ]
+        });
+        function jobHistory(e) {
+            $("<div/>").appendTo(e.detailCell).kendoChart({
+                dataSource: {
+                    transport: {
+                        read: "/rest/mrv1job/jobhistory_perday?jobshortname=" + e.data.jobshortname + "&rundate="+ e.data.rundate
+                    },
+                    schema: {
+                        model: {
+                            fields: {
+                                submit_time: {
+                                    type: "date",
+                                    parse: function (value) {
+                                        return kendo.toString(new Date(value), 'u');
+                                    }
+                                },
+                                hdfs_bytes_read: {
+                                    type: "number",
+                                    parse: function (value) {
+                                        return value/1024/1024/1024;
+                                    }
+                                },
+                                hdfs_bytes_written: {
+                                    type: "number",
+                                    parse: function (value) {
+                                        return value/1024/1024/1024;
+                                    }
+                                },
+                                reduce_shuffle_bytes: {
+                                    type: "number",
+                                    parse: function (value) {
+                                        return value/1024/1024/1024;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                chartArea: {
+                    height: 400
+                },
+                title: {
+                    text: "Job History"
+                },
+                legend: {
+                    position: "top"
+                },
+                seriesDefaults: {
+                    type: "column"
+//                stack: true
+                },
+                series:
+                        [{
+                            type: "line",
+                            field: "total_maps",
+                            name: "MAP NUM",
+                            axis: "total_maps"
+                        }, {
+                            type: "line",
+                            field: "total_reduces",
+                            name: "REDUCE NUM",
+                            axis: "total_reduces"
+                        }, {
+                            type: "line",
+                            field: "jobrunningtime",
+                            name: "RUN TIME (Second)",
+                            axis: "jobrunningtime"
+                        }, {
+                            field: "hdfs_bytes_read",
+                            name: "HDFS READ BYTES (GB)",
+                            axis: "hdfs_bytes_read"
+                        },{
+                            field: "hdfs_bytes_written",
+                            name: "HDFS WRITTEN BYTES (GB)",
+                            axis: "hdfs_bytes_written"
+                        }, {
+                            field: "reduce_shuffle_bytes",
+                            name: "REDUCE SHUFFLE BYTES (GB)",
+                            axis: "reduce_shuffle_bytes"
+                        }],
+                seriesColors: ["lightgreen", "orange", "red", "LightSkyBlue", "Gold", "DarkRed"],
+                categoryAxis: {
+                    field: "jobid",
+                    labels: {
+                        rotation: -90
+                    },
+                    majorGridLines: {
+                        visible: false
+                    },
+                    axisCrossingValues: [0, 0, 0, 100, 100, 100]
+                },
+                valueAxis: {
+                    labels: {
+                        format: "N0"
+                    },
+                    line: {
+                        visible: false
+                    }
+                },
+                valueAxes: [{
+                    name: "total_maps",
+                    title: { text: "MAP" },
+                    color: "lightgreen",
+                    min: 0
+                },{
+                    name: "total_reduces",
+                    title: { text: "REDUCE" },
+                    color: "orange",
+                    min: 0
+                },{
+                    name: "jobrunningtime",
+                    title: { text: "RUN TIME (Second)" },
+                    color: "red",
+                    min: 0
+                },{
+                    name: "hdfs_bytes_read",
+                    title: { text: "HDFS READ BYTES (GB)" },
+                    color: "LightSkyBlue",
+                    min: 0
+                },{
+                    name: "hdfs_bytes_written",
+                    title: { text: "HDFS WRITTEN BYTES (GB)" },
+                    color: "Gold",
+                    min: 0
+                },{
+                    name: "reduce_shuffle_bytes",
+                    title: { text: "REDUCE SHUFFLE BYTES (GB)" },
+                    color: "DarkRed",
+                    min: 0
+                }],
+                tooltip: {
+                    visible: true,
+                    format: "N0"
+                }
+
+            });
+        }
+    });
+
+</script>
+
+</div>

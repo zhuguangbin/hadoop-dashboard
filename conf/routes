@@ -1,0 +1,74 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET         /                                                controllers.Application.index()
+GET         /dailybill                                       controllers.Application.dailyBill(project:String ?=null, date:String, orderBy:String ?="total_cost", order:String ?="desc")
+
+
+# Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file                                    controllers.Assets.at(path="/public", file)
+
+# HDFS
+GET         /rest/hdfs/nodes                                 controllers.HDFSController.nodes()
+GET         /rest/hdfs/capacity                              controllers.HDFSController.capacity()
+GET         /rest/hdfs/blocks                                controllers.HDFSController.blocks()
+GET         /rest/hdfs/liststatus                            controllers.HDFSController.listStatus(pathSuffix:String ?= "/")
+GET         /rest/hdfs/getcontentsummary                     controllers.HDFSController.getContentSummary(pathSuffix:String ?= "/")
+GET         /rest/hdfs/du                                    controllers.HDFSController.du(path:String ?= "/")
+GET         /rest/hdfs/logsize                               controllers.HDFSController.logSize()
+
+# MRv1
+GET         /rest/mrv1/nodes                                 controllers.MRv1Controller.nodes()
+
+# Yarn
+GET         /rest/yarn/nodes                                 controllers.YarnController.nodes()
+GET         /rest/yarn/vcores                                controllers.YarnController.vcores()
+GET         /rest/yarn/memory                                controllers.YarnController.memory()
+GET         /rest/yarn/appSummary                            controllers.YarnController.appSummary()
+GET         /rest/yarn/apps                                  controllers.YarnController.apps(user:String ?="", queue:String ?="" ,startedTimeBegin:String ?="", startedTimeEnd:String ?="", limit:String ?="", state:String ?="", finalStatus:String ?="")
+
+# SparkonYarn
+GET         /rest/sparkonyarn/nodes                          controllers.YarnController.sparknodes()
+GET         /rest/sparkonyarn/vcores                         controllers.YarnController.sparkvcores()
+GET         /rest/sparkonyarn/memory                         controllers.YarnController.sparkmemory()
+GET         /rest/sparkonyarn/appSummary                     controllers.YarnController.sparkappSummary()
+GET         /rest/sparkonyarn/apps                           controllers.YarnController.sparkapps(user:String ?="", queue:String ?="" ,startedTimeBegin:String ?="", startedTimeEnd:String ?="", limit:String ?="", state:String ?="", finalStatus:String ?="")
+
+# Cluster Cost
+GET         /rest/clustercost/summary                        controllers.ClusterCostController.summary(start:String ?="", end:String ?="", orderBy:String ?="rundate", order:String ?="asc")
+GET         /rest/clustercost/byproject                      controllers.ClusterCostController.byProject(project:String ?= "", start:String ?= "", end:String ?= "", orderBy:String ?="project", order:String ?="asc")
+GET         /rest/clustercost/detailbill                     controllers.ClusterCostController.bill(project:String ?= "", start:String ?= "", end:String ?= "", orderBy:String ?="project,cluster,user,rundate", order:String ?="asc")
+
+# MRv1 Job
+GET         /rest/mrv1job/jobstat_today                      controllers.MRv1JobController.jobStatOfToday()
+GET         /rest/mrv1job/failedjobs_last24hours             controllers.MRv1JobController.failedJobsOfLast24hours(orderBy:String ?="jobId", order:String ?="desc")
+GET         /rest/mrv1job/longrunningjobs_last24hours        controllers.MRv1JobController.longRunningJobsOfLast24hours()
+GET         /rest/mrv1job/jobsummary_last2weeks              controllers.MRv1JobController.jobSummaryOfLast2weeks()
+GET         /rest/mrv1job/jobstat_last2weeks                 controllers.MRv1JobController.jobStatOfLast2weeks()
+GET         /rest/mrv1job/jobhistory_perday                  controllers.MRv1JobController.jobhistoryPerDay(jobshortname:String, rundate:String)
+GET         /rest/mrv1job/jobcounters/:jobId                 controllers.MRv1JobController.getJobCounters(jobId:String)
+GET         /rest/mrv1job/tasks/:jobId                       controllers.MRv1JobController.listTasks(jobId:String, orderBy:String ?="startTime", order:String ?="asc")
+GET         /rest/mrv1job/gantt                              controllers.MRv1JobController.gantt(starttime:String,endtime:String,user:String ?="",jobname:String ?="", jobqueue:String ?="", jobstatus:String ?="")
+
+# MRv2 Job
+GET         /rest/mrv2job/jobstat_today                      controllers.MRv2JobController.jobStatOfToday()
+GET         /rest/mrv2job/failedjobs_last24hours             controllers.MRv2JobController.failedJobsOfLast24hours(orderBy:String ?="jobId", order:String ?="desc")
+GET         /rest/mrv2job/longrunningjobs_last24hours        controllers.MRv2JobController.longRunningJobsOfLast24hours()
+GET         /rest/mrv2job/jobsummary_last2weeks              controllers.MRv2JobController.jobSummaryOfLast2weeks()
+GET         /rest/mrv2job/jobstat_last2weeks                 controllers.MRv2JobController.jobStatOfLast2weeks()
+GET         /rest/mrv2job/jobhistory_perday                  controllers.MRv2JobController.jobhistoryPerDay(jobshortname:String, rundate:String)
+GET         /rest/mrv2job/jobhistory                         controllers.MRv2JobController.jobhistory(user:String ?="", queue:String ?="" ,startedTimeBegin:String ?="", startedTimeEnd:String ?="", limit:String ?="", state:String ?="SUCCEEDED")
+
+# SparkSQL
+GET         /rest/sparksql/webuiurl                          controllers.SparkSQLController.getServerWebUIURL()
+POST        /rest/sparksql/runsql                            controllers.SparkSQLController.runsql()
+GET         /rest/sparksql/history                           controllers.SparkSQLHistoryController.list(user:String ?= null, startedTimeBegin:String ?="", startedTimeEnd:String ?="", retcode:String ?="", orderBy:String ?= "startTime", order:String ?= "desc")
+GET         /rest/sparksql/jobsummary_last2weeks             controllers.SparkSQLHistoryController.jobSummaryOfLast2weeks()
+
+# WebHCat
+GET         /rest/webhcat/databases                          controllers.WebHCatController.databases()
+GET         /rest/webhcat/tables                             controllers.WebHCatController.tables(db_name:String)
+GET         /rest/webhcat/partitions                         controllers.WebHCatController.partitions(db_name:String,table_name:String)
+GET         /rest/webhcat/columns                            controllers.WebHCatController.columns(db_name:String,table_name:String)

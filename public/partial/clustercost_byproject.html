@@ -1,0 +1,209 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/clustercost/overview">Overview</a></li>
+                        <li><a href="#/clustercost/byproject">By Project</a></li>
+                        <li><a href="#/clustercost/bill">Detail Bill</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span7">
+            <form class="form-inline">
+                <label for="project">Project : </label><input id="project" type="text" class="input-medium" placeholder="Project">
+                <label for="start">Start: </label><input id="start" style="width: 220px"/>
+                <label for="end">End: </label><input id="end" style="width: 220px"/>
+
+                <button class="submitButton k-button" id="grid-submit">Submit</button>
+            </form>
+
+            <div id="costbill_byproject_grid"></div>
+        </div>
+        <div class="span4">
+            <form class="form-inline">
+                <label for="date">Date: </label><input id="date" style="width: 220px"/>
+                <button class="submitButton k-button" id="chart-submit">Submit</button>
+            </form>
+            <div id="costbill_byproject_chart"></div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    var wnd ;
+
+    $(document).ready(function () {
+        function startChange() {
+            var startDate = start.value(),
+                    endDate = end.value();
+        }
+
+        function endChange() {
+            var endDate = end.value(),
+                    startDate = start.value();
+        }
+
+        var today = kendo.date.today();
+
+        var now = new Date();
+        var day = now.getDate();
+        var month = now.getMonth();
+        var year = now.getFullYear();
+        var hour = now.getHours();
+
+        var yestory = new Date(year, month, day-1);
+
+        var start = $("#start").kendoDatePicker({
+            value: yestory,
+            change: startChange
+        }).data("kendoDatePicker");
+
+        var end = $("#end").kendoDatePicker({
+            value: today,
+            change: endChange
+        }).data("kendoDatePicker");
+
+        var date = $("#date").kendoDatePicker({
+            value: yestory,
+            change: endChange
+        }).data("kendoDatePicker");
+
+
+        $("#grid-submit").click(refreshGrid);
+        $("#chart-submit").click(refreshChart);
+
+        var startDate = kendo.toString(start.value(), "yyyy-MM-dd");
+        var endDate = kendo.toString(end.value(), "yyyy-MM-dd");
+
+        function refreshGrid(e) {
+            startDate = kendo.toString(start.value(), "yyyy-MM-dd");
+            endDate = kendo.toString(end.value(), "yyyy-MM-dd");
+            var project = $("#project").val();
+
+            var grid = $("#costbill_byproject_grid").data("kendoGrid");
+            grid.dataSource.transport.options.read.url = serviceRoot + "?start=" + startDate + "&end=" + endDate + "&project=" + project;
+            grid.dataSource.read();
+        }
+
+        function refreshChart(e) {
+            var start = kendo.toString(date.value(), "yyyy-MM-dd");
+            var end = kendo.toString(new Date(date.value().getFullYear(),date.value().getMonth(),date.value().getDate()+1), "yyyy-MM-dd");
+            console.log(end);
+
+            var chart = $("#costbill_byproject_chart").data("kendoChart");
+            chart.dataSource.transport.options.read.url = serviceRoot + "?start=" + start + "&end=" + end ;
+            chart.dataSource.read();
+        }
+
+        var serviceRoot = "/rest/clustercost/byproject";
+        $("#costbill_byproject_grid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: serviceRoot+"?start="+startDate+"&end="+endDate
+                },
+                pageSize: 20
+            },
+            height: 600,
+//            detailInit: jobHistory,
+//                dataBound: function() {
+//                    this.expandRow(this.tbody.find("tr.k-master-row").first());
+//                },
+            resizable: true,
+            groupable: true,
+            sortable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            filterable: {
+                mode: "row"
+            },
+            columns: [
+                {
+                    field: "project",
+                    title: "Project",
+                    width: 100
+                },
+                {
+                    field: "rundate",
+                    title: "rundate",
+                    width: 80
+                },
+                {
+                    field: "mrv1_jobcount",
+                    title: "MRv1 JobCount",
+                    width: 50
+                },
+                {
+                    field: "mrv2_jobcount",
+                    title: "MRv2 JobCount",
+                    width: 50
+                },
+                {
+                    field: "mrv1_cost",
+                    title: "MRv1 Cost",
+                    width: 100
+                },
+                {
+                    field: "mrv2_cost",
+                    title: "MRv2 Cost",
+                    width: 100
+                },
+                {
+                    field: "total_cost",
+                    title: "Total Cost",
+                    width: 100
+                },
+//                {command: { text: "View Details", click: showJobDetails }, title: " ", width: "140px" }
+            ]
+        });
+
+        $("#costbill_byproject_chart").kendoChart({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: serviceRoot+"?start="+ startDate + "&end="+endDate,
+                        dataType: "json"
+                    }
+                }
+            },
+            chartArea: {
+                width: 400,
+                height: 600
+            },
+            title: {
+                text: "Cost By Project"
+            },
+            legend: {
+                position: "bottom",
+                visible: false
+            },
+            seriesDefaults: {
+                type: "pie",
+                labels: {
+                    template: "#= category # - #= kendo.format('{0:P}', percentage)#",
+                    position: "outsideEnd",
+                    visible: true,
+                    background: "transparent"
+                }
+            },
+            series: [{
+                field: "total_cost",
+                categoryField: "project",
+                padding: 0
+            }],
+            tooltip: {
+                visible: true,
+                template: "#= category # - #= value # - #= kendo.format('{0:P}', percentage) #"
+            }
+        });
+    });
+
+</script>
+
+</div>
