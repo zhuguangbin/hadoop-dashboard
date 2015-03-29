@@ -23,8 +23,8 @@ if [ $? -ne 0 ]; then
   /usr/bin/hadoop fs -mkdir $TEMPDIR
 fi
 
-#/usr/bin/hadoop fs -mv $HISTORYLOGDIR/*conf.xml $TEMPDIR
-#/usr/bin/hadoop fs -get $TEMPDIR/*conf.xml
+/usr/bin/hadoop fs -mv $HISTORYLOGDIR/*conf.xml $TEMPDIR
+/usr/bin/hadoop fs -get $TEMPDIR/*conf.xml
 
 for i in `ls *conf.xml`
  do 
