@@ -95,7 +95,7 @@ class HistoryParser {
                     LOG.info(jobId + " is finished, backup history file from " + historyLogDir + " to " + parsedhistoryDir);
 
                     fs.rename(jobfile, new Path(parsedhistoryDir, jobfile.getName()));
-                    fs.rename(new Path(historyLogDir,confFileName),new Path(parsedhistoryDir,confFileName));
+//                    fs.rename(new Path(historyLogDir,confFileName),new Path(parsedhistoryDir,confFileName));
                     printAsJson(job);
                 }
             }
