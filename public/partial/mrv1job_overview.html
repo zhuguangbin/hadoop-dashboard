@@ -16,6 +16,13 @@
             </div>
         </div>
         <div class="span11">
+            <form class="form-inline" id="jobtype">
+
+                <input type="radio" value="all" name="jobtype" checked>ALL
+                <input type="radio" value="PigLatin" name="jobtype">PigLatin
+                <input type="radio" value="" name="jobtype">MAPRED
+                <input type="radio" value="Hive" name="jobtype">Hive
+            </form>
             <div id="jobsummary_last2weeks" style="height: 400px"></div>
         </div>
     </div>
@@ -25,10 +32,21 @@
     var wnd ;
 
     $(document).ready(function () {
+
+        $('#jobtype input').on('change', function() {
+            var jobtype = $('input[name="jobtype"]:checked', '#jobtype').val()
+
+            var chart = $("#jobsummary_last2weeks").data("kendoChart");
+            chart.dataSource.transport.options.read.url = serviceRoot + "?jobtype=" + jobtype ;
+            chart.dataSource.read();
+        });
+
+        var serviceRoot = "/rest/mrv1job/jobsummary_last2weeks"
+
         $("#jobsummary_last2weeks").kendoChart({
             dataSource: {
                 transport: {
-                    read: "/rest/mrv1job/jobsummary_last2weeks"
+                    read: serviceRoot
                 }
             },
             chartArea: {
