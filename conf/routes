@@ -43,6 +43,7 @@ GET         /rest/clustercost/detailbill                     controllers.Cluster
 
 # MRv1 Job
 GET         /rest/mrv1job/jobstat_today                      controllers.MRv1JobController.jobStatOfToday()
+GET         /rest/mrv1job/eviljobs                           controllers.MRv1JobController.evilJobs(start:String ?="", end:String ?= "")
 GET         /rest/mrv1job/failedjobs_last24hours             controllers.MRv1JobController.failedJobsOfLast24hours(orderBy:String ?="jobId", order:String ?="desc")
 GET         /rest/mrv1job/longrunningjobs_last24hours        controllers.MRv1JobController.longRunningJobsOfLast24hours()
 GET         /rest/mrv1job/jobsummary_last2weeks              controllers.MRv1JobController.jobSummaryOfLast2weeks(jobtype:String ?="all")

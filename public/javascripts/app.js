@@ -65,6 +65,10 @@ var brewingTools = angular.module('dashboard', ['kendo.directives', 'dashboard.c
                 controller: 'MRv1JobController',
                 templateUrl: '/assets/partial/mrv1job_last2weeks.html'
             }).
+            when('/mrv1job/evil', {
+                controller: 'MRv1JobController',
+                templateUrl: '/assets/partial/mrv1job_evil.html'
+            }).
             when('/mrv1job/failed', {
                 controller: 'MRv1JobController',
                 templateUrl: '/assets/partial/mrv1job_failed.html'

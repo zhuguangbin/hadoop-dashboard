@@ -17,8 +17,13 @@
             </div>
         </div>
         <div class="span11">
-            <h3>运行时间最长Job Top 10</h3>
-            <div id="longrunningjobs_last24hours"></div>
+            <form class="form-inline">
+                <label for="start">Start: </label><input id="start" style="width: 220px"/>
+                <label for="end">End: </label><input id="end" style="width: 220px"/>
+
+                <button class="submitButton k-button" id="submit">Submit</button>
+            </form>
+            <div id="eviljobs"></div>
         </div>
     </div>
 </div>
@@ -27,27 +32,73 @@
     var wnd ;
 
     $(document).ready(function () {
-        $("#longrunningjobs_last24hours").kendoGrid({
+        function startChange() {
+            var startDate = start.value(),
+                    endDate = end.value();
+        }
+
+        function endChange() {
+            var endDate = end.value(),
+                    startDate = start.value();
+        }
+
+        var today = kendo.date.today();
+
+        var now = new Date();
+        var day = now.getDate();
+        var month = now.getMonth();
+        var year = now.getFullYear();
+        var hour = now.getHours();
+
+        var yestory = new Date(year, month, day-1);
+
+        var start = $("#start").kendoDatePicker({
+            value: yestory,
+            change: startChange
+        }).data("kendoDatePicker");
+
+        var end = $("#end").kendoDatePicker({
+            value: today,
+            change: endChange
+        }).data("kendoDatePicker");
+
+        var date = $("#date").kendoDatePicker({
+            value: yestory,
+            change: endChange
+        }).data("kendoDatePicker");
+
+
+        $("#submit").click(refreshGrid);
+
+        var startDate = kendo.toString(start.value(), "yyyy-MM-dd");
+        var endDate = kendo.toString(end.value(), "yyyy-MM-dd");
+
+        function refreshGrid(e) {
+            startDate = kendo.toString(start.value(), "yyyy-MM-dd");
+            endDate = kendo.toString(end.value(), "yyyy-MM-dd");
+
+            var grid = $("#eviljobs").data("kendoGrid");
+            grid.dataSource.transport.options.read.url = serviceRoot + "?start=" + startDate + "&end=" + endDate ;
+            grid.dataSource.read();
+        }
+
+        var serviceRoot = "/rest/mrv1job/eviljobs";
+
+        $("#eviljobs").kendoGrid({
             dataSource: {
                 transport: {
-                    read: "/rest/mrv1job/longrunningjobs_last24hours"
+                    read: serviceRoot
                 },
                 schema: {
                     model: {
                         fields: {
-                            submitTime: {
+                            submit_time: {
                                 type: "date",
                                 parse: function (value) {
                                     return kendo.toString(new Date(value), 'u');
                                 }
                             },
-                            lauchTime: {
-                                type: "date",
-                                parse: function (value) {
-                                    return kendo.toString(new Date(value), 'u');
-                                }
-                            },
-                            finishTime: {
+                            finish_time: {
                                 type: "date",
                                 parse: function (value) {
                                     return kendo.toString(new Date(value), 'u');
@@ -74,33 +125,35 @@
             columns: [
                 {
                     field: "jobid",
-                    title: "jobid",
+                    title: "JOBID",
                     width: 220
                 },
                 {
-                    field: "jobname",
-                    title: "jobName",
-                    width: 250
-                },
-                {
-                    field: "jobqueue",
-                    title: "jobQueue"
-                },
-                {
-                    field: "user",
-                    title: "user"
-                },
-                {
-                    field: "jobpriority",
-                    title: "jobPriority",
+                    field: "project",
+                    title: "Project",
                     width: 100
                 },
                 {
-                    field: "jobstatus"
+                    field: "jobname",
+                    title: "JobName",
+                    width: 250
                 },
                 {
-                    field: "jobrunningtime",
-                    width: 110
+                    field: "submit_time",
+                    title: "SUBMIT_TIME"
+                },
+                {
+                    field: "finish_time",
+                    title: "FINISH_TIME"
+                },
+                {
+                    field: "runningtime",
+                    title: "RUNNINGTIME",
+                    width: 100
+                },
+                {
+                    field: "jhi",
+                    width: "JHI"
                 },
                 {command: { text: "View Details", click: showJobDetails }, title: " ", width: "140px" }
             ]
@@ -113,7 +166,6 @@
             window.open("http://jt1dg.prod.mediav.com:50030/jobdetails.jsp?jobid="+dataItem.jobid+"&refresh=30", '_blank');
 
         }
-
     });
 
 </script>

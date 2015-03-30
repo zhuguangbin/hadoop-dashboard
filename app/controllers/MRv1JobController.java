@@ -21,6 +21,32 @@ public class MRv1JobController extends Controller {
     public static ObjectMapper mapper = new ObjectMapper();
 
     @BodyParser.Of(BodyParser.Json.class)
+    public static Result evilJobs(String start, String end) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        String startDateStr = start;
+        String endDateStr = end;
+        if (start == null || "".equals(start)) {
+
+            startDateStr = sdf.format(new Date());
+        }
+        if (end == null || "".equals(end)) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DAY_OF_MONTH, +1);
+            Date tomorrow = cal.getTime();
+            endDateStr = sdf.format(tomorrow);
+        }
+
+        String sql = "select JOBID,SUBSTRING_INDEX(substring(JOBNAME,locate('[',JOBNAME)),'[',2) as project, JOBNAME,SUBMIT_TIME,FINISH_TIME,runningtime,jhi from (select s.JOBID, s.JOBNAME, s.SUBMIT_TIME, s.FINISH_TIME, TIMESTAMPDIFF(SECOND,s.SUBMIT_TIME,s.FINISH_TIME) as runningtime, ROUND((TIMESTAMPDIFF(SECOND,s.LAUNCH_TIME,s.FINISH_TIME)/(s.TOTAL_MAPS+s.TOTAL_REDUCES))/((c.CPU_MILLISECONDS) / 3600000 * 0.2 + (c.HDFS_BYTES_READ / 1024 / 1024 / 1024) * 0.01 +  (c.HDFS_BYTES_WRITTEN / 1024 / 1024 / 1024) * 0.03 + (c.REDUCE_SHUFFLE_BYTES / 1024 / 1024 / 1024) * 0.05))  AS jhi from mrv1_job_summary s JOIN  mrv1_job_counters c on s.JOBID = c.JOBID) a  WHERE a.SUBMIT_TIME > '"+startDateStr+"' AND a.SUBMIT_TIME <'"+endDateStr+"' AND a.runningtime> 3600 and a.jhi > 10 ORDER BY jhi DESC ";
+        List<SqlRow> jobs = Ebean.createSqlQuery(sql).findList();
+        JsonNode result = mapper.valueToTree(jobs);
+
+        return ok(result);
+
+    }
+
+    @BodyParser.Of(BodyParser.Json.class)
     public static Result failedJobsOfLast24hours(String orderBy, String order) {
 
         Calendar cal = Calendar.getInstance();//使用默认时区和语言环境获得一个日历。
