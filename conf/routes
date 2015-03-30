@@ -57,7 +57,7 @@ GET         /rest/mrv1job/gantt                              controllers.MRv1Job
 GET         /rest/mrv2job/jobstat_today                      controllers.MRv2JobController.jobStatOfToday()
 GET         /rest/mrv2job/failedjobs_last24hours             controllers.MRv2JobController.failedJobsOfLast24hours(orderBy:String ?="jobId", order:String ?="desc")
 GET         /rest/mrv2job/longrunningjobs_last24hours        controllers.MRv2JobController.longRunningJobsOfLast24hours()
-GET         /rest/mrv2job/jobsummary_last2weeks              controllers.MRv2JobController.jobSummaryOfLast2weeks()
+GET         /rest/mrv2job/jobsummary_last2weeks              controllers.MRv2JobController.jobSummaryOfLast2weeks(jobtype:String ?="all")
 GET         /rest/mrv2job/jobstat_last2weeks                 controllers.MRv2JobController.jobStatOfLast2weeks()
 GET         /rest/mrv2job/jobhistory_perday                  controllers.MRv2JobController.jobhistoryPerDay(jobshortname:String, rundate:String)
 GET         /rest/mrv2job/jobhistory                         controllers.MRv2JobController.jobhistory(user:String ?="", queue:String ?="" ,startedTimeBegin:String ?="", startedTimeEnd:String ?="", limit:String ?="", state:String ?="SUCCEEDED")

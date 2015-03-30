@@ -61,7 +61,7 @@ public class MRv2JobController extends Controller {
     }
 
     @BodyParser.Of(BodyParser.Json.class)
-    public static Result jobSummaryOfLast2weeks() {
+    public static Result jobSummaryOfLast2weeks(String jobtype) {
 
         Calendar cal = Calendar.getInstance();//使用默认时区和语言环境获得一个日历。
         cal.add(Calendar.DAY_OF_MONTH, -14);//取当前日期的前一天.
@@ -69,8 +69,13 @@ public class MRv2JobController extends Controller {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String dateStr = sdf.format(date);
 
-        String sql = "select DATE_FORMAT(s.startTime,'%Y-%m-%d') as rundate, sum(case when s.state=\"SUCCEEDED\" then 1 else 0 end ) as success,   sum(case when s.state=\"KILLED\" then 1 else 0 end ) as killed, sum(case when s.state=\"FAILED\" then 1 else 0 end ) as failed, sum(s.mapsTotal) as total_maps, sum(s.reducesTotal) as total_reduces , sum(c.HDFS_BYTES_READ)/1024/1024/1024/1024 as hdfs_read_tb , sum(c.HDFS_BYTES_WRITTEN)/1024/1024/1024/1024 as hdfs_written_tb from mrv2_job_summary s left join mrv2_job_counters c on s.id=c.id  where s.startTime>='" + dateStr + "' group by rundate";
+        String sql = "select DATE_FORMAT(s.startTime,'%Y-%m-%d') as rundate, sum(case when s.state=\"SUCCEEDED\" then 1 else 0 end ) as success,   sum(case when s.state=\"KILLED\" then 1 else 0 end ) as killed, sum(case when s.state=\"FAILED\" then 1 else 0 end ) as failed, sum(s.mapsTotal) as total_maps, sum(s.reducesTotal) as total_reduces , sum(c.HDFS_BYTES_READ)/1024/1024/1024/1024 as hdfs_read_tb , sum(c.HDFS_BYTES_WRITTEN)/1024/1024/1024/1024 as hdfs_written_tb from mrv2_job_summary s left join mrv2_job_counters c on s.id=c.id  where s.startTime>='" + dateStr + "' ";
 
+        if (jobtype!=null && !"all".equals(jobtype)){
+            sql += " AND substring_index(left(s.name,locate('[',s.name)-1),':',1) = '"+jobtype+"' ";
+        }
+
+        sql += " group by rundate";
         List<SqlRow> jobs = Ebean.createSqlQuery(sql).findList();
         return ok(mapper.valueToTree(jobs));
     }
