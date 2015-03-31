@@ -130,7 +130,7 @@
             $("<div/>").appendTo(e.detailCell).kendoChart({
                 dataSource: {
                     transport: {
-                        read: "/rest/mrv2job/jobhistory?jobshortname=" + e.data.jobshortname + "&rundate="+ e.data.rundate
+                        read: "/rest/mrv2job/jobhistory_perday?jobshortname=" + e.data.jobshortname + "&rundate="+ e.data.rundate
                     },
                     schema: {
                         model: {
