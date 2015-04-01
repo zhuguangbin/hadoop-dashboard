@@ -22,7 +22,7 @@ def parse(jobconffile):
 	#  MAP_CLASS,REDUCE_CLASS,
 	#  OUT_COMPRESS,OUT_COMPRESS_CODEC
 	# )
-	JOBID = jobconffile[:-9]
+	JOBID = jobconffile[jobconffile.index('job'):-9]
 	jobconf = {}
 	jobconf['JOBID'] = JOBID
 	
