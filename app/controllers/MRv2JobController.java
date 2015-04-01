@@ -162,4 +162,31 @@ public class MRv2JobController extends Controller {
         );
     }
 
+  @BodyParser.Of(BodyParser.Json.class)
+  public static Result jobConfStat(String jobname, String start, String end) {
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+    String startDateStr = start;
+    String endDateStr = end;
+    if (start == null || "".equals(start)) {
+      Calendar cal = Calendar.getInstance();//使用默认时区和语言环境获得一个日历。
+      cal.add(Calendar.DAY_OF_MONTH, -1);//取当前日期的前一天.
+      Date date = cal.getTime();
+
+      startDateStr = sdf.format(date);
+    }
+    if (end == null || "".equals(end)) {
+      endDateStr = sdf.format(new Date());
+    }
+
+    String sql = "SELECT  distinct( case left(s.name,1) when '[' then 'MAPRED' else left(s.name,locate(':',s.name)-1) end) as jobtype, (CASE SUBSTRING_INDEX(substring(s.name,locate('[',s.name)),'[',2) WHEN '' THEN 'UNDEFINED' ELSE SUBSTRING_INDEX(substring(s.name,locate('[',s.name)),'[',2) END) as project, (substring_index(s.name, '[', 3)) as jobshortname,DATE_FORMAT(s.startTime,'%Y-%m-%d') as rundate, f.SUBMIT_HOST, SUBSTR(f.INPUTDIR,1,100) AS INPUTDIR, f.INPUTFORMAT, f.OUTPUTDIR, f.OUTPUTFORMAT,f.OUT_COMPRESS, f.OUT_COMPRESS_CODEC, f.MAP_MEMORY , f.REDUCE_MEMORY FROM  hadoop.mrv2_job_summary s LEFT OUTER JOIN hadoop.mrv2_job_conf f ON f.JOBID=s.id WHERE s.startTime >= '" + startDateStr + "' AND s.startTime < '" + endDateStr + "' ";
+    if (jobname !=null || !"".equals(jobname)){
+      sql += " AND s.name like '%"+jobname+"%' ";
+    }
+    sql +=" GROUP BY 1,2,3,4";
+    List<SqlRow> jobs = Ebean.createSqlQuery(sql).findList();
+    return ok(mapper.valueToTree(jobs));
+  }
+
 }
