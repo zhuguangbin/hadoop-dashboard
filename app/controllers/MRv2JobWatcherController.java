@@ -21,6 +21,8 @@ public class MRv2JobWatcherController extends Controller {
 
   public static Result sendSMSIfError(final String jobId, final String jobStatus) {
 
+    Logger.info("Job: " + jobId + " Finished, jobStatus: " + jobStatus);
+
     if (!"SUCCEEDED".equals(jobStatus)) {
       Logger.info("JOB is " + jobStatus + ", Sending SMS to oncall & jobowner! ");
       return async(
