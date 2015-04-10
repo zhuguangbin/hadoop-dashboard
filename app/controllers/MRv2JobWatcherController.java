@@ -34,7 +34,6 @@ public class MRv2JobWatcherController extends Controller {
                           if (!"null".equals(response.asJson().get("job").toString())) {
                             jobname = response.asJson().get("job").get("name").asText();
                             int i = StringUtils.ordinalIndexOf(jobname, "[", 3);
-                            Logger.info("index is : " + String.valueOf(i));
                             // jobname if normallized
                             if (i != -1) {
                               String jobshortname = jobname.substring(0, i);
@@ -50,6 +49,7 @@ public class MRv2JobWatcherController extends Controller {
 
                                 if (onCallPhone != null && !"".equalsIgnoreCase(onCallPhone)) {
                                   Logger.info("Sending alter message for job " + jobId + " jobname: " + jobname + " , because job is " + jobStatus + ". Job Watcher : " + jobWatcher.toString());
+                                  Logger.info(msg);
                                   WS.url(smsurl).setQueryParameter("to", onCallPhone).setQueryParameter("msg", msg).get().get();
                                 }
 

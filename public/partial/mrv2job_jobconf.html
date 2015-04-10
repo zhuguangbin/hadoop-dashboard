@@ -181,9 +181,11 @@
       function watchJob(e) {
         var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
 
+        var jobname = dataItem.jobshortname
+
         var window = $("#window").kendoWindow({
-          height: "600px",
-          width: "600px",
+          height: "550px",
+          width: "400px",
           modal: true,
           resizable: true,
           draggable: true,
