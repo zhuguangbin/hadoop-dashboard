@@ -24,6 +24,7 @@
                 <button class="submitButton k-button" id="submit">Submit</button>
             </form>
             <div id="jobconf_stat"></div>
+            <div id="window"></div>
         </div>
     </div>
 </div>
@@ -171,10 +172,27 @@
                     field: "reduce_memory",
                     title: "REDUCE_MEMORY",
                     width: 100
-                }
-//                {command: { text: "View Details", click: showJobDetails }, title: " ", width: "140px" }
+                },
+                {command: { text: "watch", click: watchJob }, title: " ", width: "140px" }
             ]
         });
+
+
+      function watchJob(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        var window = $("#window").kendoWindow({
+          height: "600px",
+          width: "600px",
+          modal: true,
+          resizable: true,
+          draggable: true,
+          title: "Job Watcher",
+          content: "/mrv2job/watcherinfo?jobname="+jobname,
+          visible: false /*don't show it yet*/
+        }).data("kendoWindow").center().open();
+
+      }
     });
 
 </script>

@@ -1,0 +1,50 @@
+@(jobwatcherForm: Form[MRv2JobWatcher])
+
+@import helper._
+@import helper.twitterBootstrap._
+
+  @if(jobwatcherForm.hasErrors) {
+    <div class="alert-message error">
+      <p><strong>Oops</strong> Please fix all errors</p>
+    </div>
+  }
+
+  @helper.form(action = routes.MRv2JobWatcherController.save, 'id -> "form") {
+
+    <fieldset>
+      <legend>Please Input Job Watcher Information</legend>
+
+      @inputText(
+        jobwatcherForm("jobName"),
+        '_label -> "Job Name: "
+      )
+
+      @inputText(
+        jobwatcherForm("jobOwner"),
+        '_label -> "JOB OWNER: "
+      )
+
+      @inputText(
+        jobwatcherForm("jobOwnerPhone"),
+        '_label -> "JOB OWNER Phone: "
+      )
+
+      @inputText(
+        jobwatcherForm("onCallName"),
+        '_label -> "ONCALL Name: "
+      )
+
+      @inputText(
+        jobwatcherForm("onCallPhone"),
+        '_label -> "ONCALL PHONE: "
+      )
+
+    </fieldset>
+
+
+    <div class="actions">
+      <input type="submit" class="btn primary" value="Submit">
+      <input type="button" class="btn primary" onclick="self.close()" value="Close">
+    </div>
+
+  }

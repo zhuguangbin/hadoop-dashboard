@@ -28,7 +28,7 @@ public class MRv2JobController extends Controller {
 
     private static String mapreduce_http_addresss = Play.application().configuration().getString("hadoop.mapreduce.historyserver.http.address");
 
-    private static String serviceRoot = "http://" + mapreduce_http_addresss + "/ws/v1/history/mapreduce/";
+    public static String serviceRoot = "http://" + mapreduce_http_addresss + "/ws/v1/history/mapreduce/";
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result failedJobsOfLast24hours(String orderBy, String order) {

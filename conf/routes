@@ -5,7 +5,10 @@
 # Home page
 GET         /                                                controllers.Application.index()
 GET         /dailybill                                       controllers.Application.dailyBill(project:String ?=null, date:String, orderBy:String ?="total_cost", order:String ?="desc")
-
+# JobWatcher
+GET         /mrv2job/jobwatcher                              controllers.MRv2JobWatcherController.sendSMSIfError(jobId:String, jobStatus:String)
+GET         /mrv2job/watcherinfo                             controllers.MRv2JobWatcherController.findByJobName(jobname:String)
+GET         /mrv2job/watcherinfo/save                        controllers.MRv2JobWatcherController.save()
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                                    controllers.Assets.at(path="/public", file)
