@@ -2,8 +2,8 @@ var brewingTools = angular.module('dashboard', ['kendo.directives', 'dashboard.c
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider.
 		    when('/', {
-		      controller: 'AboutController',
-		      templateUrl: '/assets/partial/about.html'
+		      controller: 'IndexController',
+		      templateUrl: '/assets/partial/index.html'
 		    }).
             when('/cluster', {
                 redirectTo: '/cluster/hdfs'

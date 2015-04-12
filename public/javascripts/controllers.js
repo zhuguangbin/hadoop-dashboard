@@ -1,7 +1,7 @@
 angular.module('dashboard.controllers', [])
 
   .controller('MenuController', ['$scope', '$location', function($scope, $location) {
-    $scope.menuItems = [{url: '/', name: 'About'},
+    $scope.menuItems = [{url: '/', name: 'Index'},
                         {url: '/cluster',       name: 'Cluster'},
                         {url: '/clustercost',       name: 'Cost'},
                         {url: '/hdfs',       name: 'HDFS'},
@@ -18,7 +18,7 @@ angular.module('dashboard.controllers', [])
     };
   }])
 
-  .controller('AboutController', ['$scope', function($scope) {       
+  .controller('IndexController', ['$scope', function($scope) {       
     
   }])
 
