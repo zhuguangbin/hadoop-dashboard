@@ -25,6 +25,12 @@ public class MRv2JobWatcherController extends Controller {
 
     if (!"SUCCEEDED".equals(jobStatus)) {
       Logger.info("JOB is " + jobStatus + ", Sending SMS to oncall & jobowner! ");
+      // sleep 30 seconds, for jobinfo ready in historyserver
+      try {
+        Thread.sleep(30000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
       return async(
               WS.url(MRv2JobController.serviceRoot + "jobs/" + jobId)
                       .get().map(
