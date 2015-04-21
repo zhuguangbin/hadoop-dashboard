@@ -49,8 +49,18 @@
                         field: "mrv2_cost",
                         name: "MRv2 Cost",
                         axis: "mrv2_cost"
+                    },{
+                      type: "area",
+                      field: "mrv1_jobcount",
+                      name: "MRv1 JobCount",
+                      axis: "mrv1_jobcount"
+                    },{
+                      type: "area",
+                      field: "mrv2_jobcount",
+                      name: "MRv2 JobCount",
+                      axis: "mrv2_jobcount"
                     }],
-            seriesColors: ["lightgreen", "orange",],
+            seriesColors: ["lightgreen", "orange", "red", "LightSkyBlue"],
             categoryAxis: {
                 field: "rundate",
                 labels: {
@@ -58,7 +68,8 @@
                 },
                 majorGridLines: {
                     visible: false
-                }
+                },
+                axisCrossingValues: [0, 0, 100, 100]
             },
             valueAxis: {
                 labels: {
@@ -78,6 +89,16 @@
                 title: { text: "MRv2 Cost (RMB)",visible: false },
                 color: "orange",
                 min: 0
+            },{
+              name: "mrv1_jobcount",
+              title: { text: "MRv1 JobCount",visible: false },
+              color: "red",
+              min: 0
+            },{
+              name: "mrv2_jobcount",
+              title: { text: "MRv2 JobCount",visible: false },
+              color: "LightSkyBlue",
+              min: 0
             }],
             tooltip: {
                 visible: true,

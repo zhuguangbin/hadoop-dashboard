@@ -43,9 +43,9 @@ public class ClusterCostController extends Controller {
             endDateStr = sdf.format(tomorrow);
         }
 
-        String sql = "SELECT rundate, ROUND(sum(CASE cluster WHEN 'mrv1' THEN cost ELSE 0 END ),2) as mrv1_cost, round(sum(CASE cluster WHEN 'mrv2' THEN cost ELSE 0 END ),2) as mrv2_cost FROM\n" +
-                "  (\n" +
-                "    SELECT\n" +
+        String sql = "SELECT rundate, ROUND(sum(CASE cluster WHEN 'mrv1' THEN cost ELSE 0 END ),2) as mrv1_cost, sum(CASE cluster WHEN 'mrv1' THEN jobcount ELSE 0 END ) as mrv1_jobcount," +
+                " ROUND(sum(CASE cluster WHEN 'mrv2' THEN cost ELSE 0 END ),2) as mrv2_cost, sum(CASE cluster WHEN 'mrv2' THEN jobcount ELSE 0 END ) as mrv2_jobcount FROM\n" +
+                " (    SELECT\n" +
                 "      DATE_FORMAT(s.submit_time, '%Y-%m-%d')                       AS rundate,\n" +
                 "      'mrv1'                                                       AS cluster,\n" +
                 "      count(\n" +
