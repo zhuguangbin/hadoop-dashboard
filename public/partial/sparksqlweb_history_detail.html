@@ -20,8 +20,10 @@
                 <select id="retcode" class="input-small">
                     <option value="">--status--</option>
                     <option value="0">SUCCESS</option>
-                    <option value="1">SQLException</option>
-                    <option value="2">UnknownException</option>
+                    <option value="1">AnalysisException</option>
+                    <option value="2">SparkException</option>
+                    <option value="3">SparkThriftServerException</option>
+                    <option value="100">OtherException</option>
                 </select>
 
                 <button class="submitButton k-button" id="submit">Submit</button>

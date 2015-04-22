@@ -42,11 +42,20 @@ $(document).ready(function () {
                 [{
                     field: "success",
                     name: "SUCCESS"
-                },  {
-                    field: "failed",
-                    name: "FAILED"
+                },{
+                    field: "analysisexception",
+                    name: "AnalysisException"
+                },{
+                  field: "sparkexception",
+                  name: "SparkException"
+                },{
+                  field: "sparkthriftserverexception",
+                  name: "SparkThriftServerException"
+                },{
+                  field: "otherexception",
+                  name: "OtherException"
                 }],
-        seriesColors: ["lightgreen", "red"],
+        seriesColors: ["lightgreen", "gold", "red", "DarkOrange", "Orchid"],
         categoryAxis: {
             field: "rundate",
             labels: {
@@ -54,7 +63,8 @@ $(document).ready(function () {
             },
             majorGridLines: {
                 visible: false
-            }
+            },
+          axisCrossingValues: [0, 100, 100, 100, 100]
         },
         valueAxis: {
             labels: {
@@ -66,14 +76,29 @@ $(document).ready(function () {
         },
         valueAxes: [{
             name: "success",
-            title: { text: "SUCCESS JOBCOUNT" },
+            title: { text: "SUCCESS JOBCOUNT",visible: false },
             color: "lightgreen",
             min: 0
         },{
-            name: "failed",
-            title: { text: "FAILED JOBCOUNT" },
-            color: "red",
+            name: "analysisexception",
+            title: { text: "AnalysisException",visible: false },
+            color: "gold",
             min: 0
+        },{
+          name: "sparkexception",
+          title: { text: "SparkException",visible: false },
+          color: "red",
+          min: 0
+        },{
+          name: "sparkthriftserverexception",
+          title: { text: "SparkThriftServerException",visible: false },
+          color: "DarkOrange",
+          min: 0
+        },{
+          name: "otherexception",
+          title: { text: "OtherException",visible: false },
+          color: "Orchid",
+          min: 0
         }   ],
         tooltip: {
             visible: true,

@@ -38,7 +38,7 @@ public class SparkSQLHistoryController extends Controller {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String dateStr = sdf.format(date);
 
-        String sql = "select DATE_FORMAT(s.start_time,'%Y-%m-%d') as rundate, sum(case when s.retcode = 0 then 1 else 0 end ) as success,  sum(case when s.retcode != 0 then 1 else 0 end ) as failed from sparksql_history s where s.start_time > '" + dateStr + "' group by 1";
+        String sql = "select DATE_FORMAT(s.start_time,'%Y-%m-%d') as rundate, sum(case when s.retcode = 0 then 1 else 0 end ) as success,  sum(case when s.retcode = 1 then 1 else 0 end ) as AnalysisException, sum(case when s.retcode = 2 then 1 else 0 end ) as SparkException, sum(case when s.retcode = 3 then 1 else 0 end ) as SparkThriftServerException, sum(case when s.retcode = 100 then 1 else 0 end ) as OtherException from sparksql_history s where s.start_time > '" + dateStr + "' group by 1";
 
         List<SqlRow> jobs = Ebean.createSqlQuery(sql).findList();
         return ok(mapper.valueToTree(jobs));
