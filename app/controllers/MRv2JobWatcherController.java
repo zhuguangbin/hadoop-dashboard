@@ -11,6 +11,9 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.mrv2jobwatcher;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import static play.data.Form.form;
 
 public class MRv2JobWatcherController extends Controller {
@@ -37,14 +40,14 @@ public class MRv2JobWatcherController extends Controller {
                       new F.Function<WS.Response, Result>() {
                         public Result apply(WS.Response response) {
 
-                          String jobname = null;
+                          String fulljobname = null;
                           // got result
                           if (!"null".equals(response.asJson().get("job").toString())) {
-                            jobname = response.asJson().get("job").get("name").asText();
-                            int i = StringUtils.ordinalIndexOf(jobname, "[", 3);
+                            fulljobname = response.asJson().get("job").get("name").asText();
+                            int i = StringUtils.ordinalIndexOf(fulljobname, "[", 3);
                             // jobname if normallized
                             if (i != -1) {
-                              String jobshortname = jobname.substring(0, i);
+                              String jobshortname = fulljobname.substring(0, i);
                               Logger.info("Job ShortName is : " + jobshortname);
 
                               MRv2JobWatcher jobWatcher = MRv2JobWatcher.findByJobName(jobshortname);
@@ -53,11 +56,15 @@ public class MRv2JobWatcherController extends Controller {
                                 String onCallPhone = jobWatcher.getOnCallPhone();
                                 String jobOwnerPhone = jobWatcher.getJobOwnerPhone();
 
-                                String msg = "JobId:" + jobId + ",jobStatus:" + jobStatus;
+                                int j = StringUtils.ordinalIndexOf(jobshortname, "[", 2);
+                                String realjobname = jobshortname.substring(j+1,jobshortname.length()-1);
+
+                                String fullmsg = "H:"+new SimpleDateFormat("HH:mm:ss").format(new Date()).toString()+",h,"+jobId+"="+jobStatus+":"+realjobname;
+                                String msg = fullmsg.substring(0,60);
+                                Logger.info("Sending sms message for job " + jobId + " jobname: " + fulljobname + " , because job is " + jobStatus + ". Job Watcher : " + jobWatcher.toString());
+                                Logger.info(msg);
 
                                 if (onCallPhone != null && !"".equalsIgnoreCase(onCallPhone)) {
-                                  Logger.info("Sending alter message for job " + jobId + " jobname: " + jobname + " , because job is " + jobStatus + ". Job Watcher : " + jobWatcher.toString());
-                                  Logger.info(msg);
                                   WS.url(smsurl).setQueryParameter("to", onCallPhone).setQueryParameter("msg", msg).get().get();
                                 }
 
