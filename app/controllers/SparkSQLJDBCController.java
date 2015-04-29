@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class SparkSQLController extends Controller {
+public class SparkSQLJDBCController extends Controller {
   public static ObjectMapper mapper = new ObjectMapper();
 
   static final String JDBC_DRIVER = "org.apache.hive.jdbc.HiveDriver";

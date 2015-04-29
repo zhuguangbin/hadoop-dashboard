@@ -68,8 +68,9 @@ GET         /rest/mrv2job/jobhistory                         controllers.MRv2Job
 GET         /rest/mrv2job/jobconfstat                        controllers.MRv2JobController.jobConfStat(jobname:String ?="", start:String ?= "", end:String ?="")
 
 # SparkSQL
-GET         /rest/sparksql/webuiurl                          controllers.SparkSQLController.getServerWebUIURL()
-POST        /rest/sparksql/runsql                            controllers.SparkSQLController.runsql()
+GET         /rest/sparksql/webuiurl                          controllers.SparkSQLJDBCController.getServerWebUIURL()
+POST        /rest/sparksql/runsqljdbc                        controllers.SparkSQLJDBCController.runsql()
+POST        /rest/sparksql/runsqlcli                         controllers.SparkSQLCLIController.runsql()
 GET         /rest/sparksql/history                           controllers.SparkSQLHistoryController.list(user:String ?= null, startedTimeBegin:String ?="", startedTimeEnd:String ?="", retcode:String ?="", orderBy:String ?= "startTime", order:String ?= "desc")
 GET         /rest/sparksql/jobsummary_last2weeks             controllers.SparkSQLHistoryController.jobSummaryOfLast2weeks()
 
