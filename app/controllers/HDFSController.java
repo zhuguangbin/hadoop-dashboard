@@ -230,7 +230,7 @@ public class HDFSController extends Controller {
                     String fullPath = path.get("fullPath").asText();
                     String logName = fullPath.substring(0,fullPath.lastIndexOf("/")).replaceAll("/", "_").replaceAll("-","_");
                     Long size = path.get("size").asLong() / 1024 / 1024 / 1024;
-                    if (dateStr.equalsIgnoreCase(logdate)) {
+                    if (logdate.endsWith(dateStr)) {
                         eachday.put(logName, size);
                     }
 

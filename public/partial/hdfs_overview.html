@@ -43,20 +43,35 @@
                         field: "_mvad_rawlog_dsp",
                         name: "dsp"
                     },{
+                      field: "_mvad_rawlog_dsp_parquet",
+                      name: "dsp-parquet"
+                    },{
+                      field: "_mvad_rawlog_dsp_parquet_hourly",
+                      name: "dsp-parquet-hourly"
+                    },{
+                      field: "_mvad_rawlog_dsp_extended",
+                      name: "dsp-extended"
+                    },{
+                      field: "_mvad_rawlog_dsp_extended_parquet_hourly",
+                      name: "dsp-extended-parquet"
+                    },{
                         field: "_mvad_rawlog_dsp_logfilter",
                         name: "dsp-logfilter"
                     },{
                         field: "_mvad_rawlog_dsp_sample",
                         name: "dsp-sample"
                     },{
-                        field: "_mvad_rawlog_dsp_parquet",
-                        name: "dsp-parquet"
-                    },{
                         field: "_mvad_rawlog_exchange",
                         name: "exchange"
                     },{
-                        field: "_mvad_rawlog_dsp_extended",
+                      field: "_mvad_rawlog_exchange_parquet_hourly",
+                      name: "exchange-parquet-hourly"
+                    },{
+                        field: "_mvad_rawlog_exchange_extended",
                         name: "exchange-extended"
+                    },{
+                      field: "_mvad_rawlog_exchange_extended_parquet_hourly",
+                      name: "exchange-extended-parquet-hourly"
                     },{
                         field: "_mvad_rawlog_ambition",
                         name: "ambition"
@@ -66,6 +81,9 @@
                     },{
                         field: "_mvad_rawlog_ambition_parquet",
                         name: "ambition-parquet"
+                    },{
+                      field: "_mvad_rawlog_ambition_parquet_hourly",
+                      name: "ambition-parquet-hourly"
                     },{
                         field: "_mvad_rawlog_torpedo",
                         name: "torpedo"
@@ -85,7 +103,7 @@
                         field: "_mvad_sessionlog_dspan_history_parquet",
                         name: "dspan-history-parquet"
                     }],
-            seriesColors: ["DodgerBlue", "DimGray", "FireBrick", "FloralWhite", "Fuchsia", "Gold", "Green", "HotPink", "Indigo", "Orange", "Red", "Teal" , "Aqua", "Brown", "Chartreuse"],
+            seriesColors: ["DodgerBlue", "DimGray", "FireBrick", "PowderBlue", "Fuchsia", "Gold", "Green", "HotPink", "Indigo", "Orange", "Red", "Teal" , "Aqua", "Brown", "Chartreuse","BlueViolet","DarkBlue","DarkSeaGreen","Pink","MediumSlateBlue","Wheat"],
             categoryAxis: {
                 field: "date",
                 labels: {
@@ -106,7 +124,7 @@
             },
             tooltip: {
                 visible: true,
-                format: "N0"
+                template: " #= value #G "
             }
 
         });
