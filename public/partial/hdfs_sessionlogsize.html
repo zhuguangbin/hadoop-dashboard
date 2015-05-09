@@ -1,0 +1,78 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/hdfs/rawlogsize">RAWLOG</a></li>
+                        <li><a href="#/hdfs/sessionlogsize">SESSIONLOG</a></li>
+                        <li><a href="#/hdfs/dwsize">DW</a></li>
+                        <li><a href="#/hdfs/viewer">HDFSViewer</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+            <div id="mvad_log"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#mvad_log").kendoChart({
+            dataSource: {
+                transport: {
+                    read: "/rest/hdfs/logsize?path=/user/hadoop/thriftlog"
+                }
+            },
+            chartArea: {
+                height: 400
+            },
+            title: {
+                text: "MVAD SESSIONLOG SIZE (GB)"
+            },
+            legend: {
+                position: "top"
+            },
+            seriesDefaults: {
+                type: "column",
+                stack: true
+            },
+            series:
+                    [ {
+                        field: "_user_hadoop_thriftlog",
+                        name: "sessionlog"
+                    }],
+            seriesColors: ["DodgerBlue", "DimGray", "FireBrick", "PowderBlue", "Fuchsia", "Gold", "Green", "HotPink", "Indigo", "Orange", "Red", "Teal" , "Aqua", "Brown", "Chartreuse","BlueViolet","DarkBlue","DarkSeaGreen","Pink","MediumSlateBlue","Wheat"],
+            categoryAxis: {
+                field: "date",
+                labels: {
+                    rotation: -90
+                },
+                majorGridLines: {
+                    visible: false
+                }
+//                axisCrossingValues: [0, 0, 0, 100, 100, 100, 100]
+            },
+            valueAxis: {
+                labels: {
+                    format: "N0"
+                },
+                line: {
+                    visible: true
+                }
+            },
+            tooltip: {
+                visible: true,
+                template: " #= value #G "
+            }
+
+        });
+    });
+
+</script>
+
+
+</div>

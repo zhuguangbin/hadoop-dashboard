@@ -1,0 +1,108 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/hdfs/rawlogsize">RAWLOG</a></li>
+                        <li><a href="#/hdfs/sessionlogsize">SESSIONLOG</a></li>
+                        <li><a href="#/hdfs/dwsize">DW</a></li>
+                        <li><a href="#/hdfs/viewer">HDFSViewer</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+            <div id="mvad_log"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#mvad_log").kendoChart({
+            dataSource: {
+                transport: {
+                    read: "/rest/hdfs/logsize?path={/mvad/warehouse/,/user/hive/warehouse/}*/*"
+                }
+            },
+            chartArea: {
+                height: 400
+            },
+            title: {
+                text: "MVAD DW SIZE (GB)"
+            },
+            legend: {
+                position: "top"
+            },
+            seriesDefaults: {
+                type: "column",
+                stack: true
+            },
+            series:
+                    [ {
+                      field: "______mvad_warehouse_ods_dsp",
+                      name: "ods.dsp"
+                    },{
+                      field: "______mvad_warehouse_ods_dsp_extended",
+                      name: "ods.dsp_extended"
+                    },{
+                      field: "______mvad_warehouse_ods_exchange",
+                      name: "ods.exchange"
+                    },{
+                      field: "______mvad_warehouse_ods_exchange_extended",
+                      name: "ods.exchange_extended"
+                    },{
+                      field: "______mvad_warehouse_ods_ambition",
+                      name: "ods.ambition"
+                    },{
+                      field: "______mvad_warehouse_session_dspan",
+                      name: "session.dspan"
+                    },{
+                      field: "______mvad_warehouse_session_dspan_history",
+                      name: "session.dspan_history"
+                    },{
+                      field: "______mvad_warehouse_session_cookiesummary",
+                      name: "session.cookiesummary"
+                    },{
+                      field: "___hive_warehouse_mediav_base_db_d_clickvalue",
+                      name: "mediav_base.d_clickvalue"
+                    },{
+                      field: "___hive_warehouse_mediav_base_db_d_realtime_qihu",
+                      name: "mediav_base.d_realtime_qihu"
+                    },{
+                      field: "___hive_warehouse_report_db_daily_report",
+                      name: "report.daily_report"
+                    }],
+            seriesColors: ["DodgerBlue", "DimGray", "FireBrick", "PowderBlue", "Fuchsia", "Gold", "Green", "HotPink", "Indigo", "Orange", "Red", "Teal" , "Aqua", "Brown", "Chartreuse","BlueViolet","DarkBlue","DarkSeaGreen","Pink","MediumSlateBlue","Wheat"],
+            categoryAxis: {
+                field: "date",
+                labels: {
+                    rotation: -90
+                },
+                majorGridLines: {
+                    visible: false
+                }
+//                axisCrossingValues: [0, 0, 0, 100, 100, 100, 100]
+            },
+            valueAxis: {
+                labels: {
+                    format: "N0"
+                },
+                line: {
+                    visible: true
+                }
+            },
+            tooltip: {
+                visible: true,
+                template: " #= value #G "
+            }
+
+        });
+    });
+
+</script>
+
+
+</div>

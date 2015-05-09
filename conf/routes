@@ -20,7 +20,7 @@ GET         /rest/hdfs/blocks                                controllers.HDFSCon
 GET         /rest/hdfs/liststatus                            controllers.HDFSController.listStatus(pathSuffix:String ?= "/")
 GET         /rest/hdfs/getcontentsummary                     controllers.HDFSController.getContentSummary(pathSuffix:String ?= "/")
 GET         /rest/hdfs/du                                    controllers.HDFSController.du(path:String ?= "/")
-GET         /rest/hdfs/logsize                               controllers.HDFSController.logSize()
+GET         /rest/hdfs/logsize                               controllers.HDFSController.logSize(path:String)
 
 # MRv1
 GET         /rest/mrv1/nodes                                 controllers.MRv1Controller.nodes()

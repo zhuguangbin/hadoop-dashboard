@@ -40,11 +40,19 @@ var brewingTools = angular.module('dashboard', ['kendo.directives', 'dashboard.c
                 templateUrl: '/assets/partial/clustercost_bill.html'
             }).
             when('/hdfs',{
-                redirectTo: '/hdfs/overview'
+                redirectTo: '/hdfs/rawlogsize'
             }).
-            when('/hdfs/overview', {
+            when('/hdfs/rawlogsize', {
                 controller: 'HDFSController',
-                templateUrl: '/assets/partial/hdfs_overview.html'
+                templateUrl: '/assets/partial/hdfs_rawlogsize.html'
+            }).
+            when('/hdfs/sessionlogsize', {
+              controller: 'HDFSController',
+              templateUrl: '/assets/partial/hdfs_sessionlogsize.html'
+            }).
+            when('/hdfs/dwsize', {
+              controller: 'HDFSController',
+              templateUrl: '/assets/partial/hdfs_dwsize.html'
             }).
             when('/hdfs/viewer', {
                 controller: 'HDFSController',

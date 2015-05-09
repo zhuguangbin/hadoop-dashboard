@@ -4,7 +4,9 @@
             <div class="sidebar-nav">
                 <div class="navbar navbar-default" role="navigation">
                     <ul class="nav navbar-nav">
-                        <li><a href="#/hdfs/overview">MVAD LOG</a></li>
+                        <li><a href="#/hdfs/rawlogsize">RAWLOG</a></li>
+                        <li><a href="#/hdfs/sessionlogsize">SESSIONLOG</a></li>
+                        <li><a href="#/hdfs/dwsize">DW</a></li>
                         <li><a href="#/hdfs/viewer">HDFSViewer</a></li>
                     </ul>
                 </div>
@@ -22,14 +24,14 @@
         $("#mvad_log").kendoChart({
             dataSource: {
                 transport: {
-                    read: "/rest/hdfs/logsize"
+                    read: "/rest/hdfs/logsize?path=/mvad/rawlog/*"
                 }
             },
             chartArea: {
                 height: 400
             },
             title: {
-                text: "MVAD LOG SIZE (GB)"
+                text: "MVAD RAWLOG SIZE (GB)"
             },
             legend: {
                 position: "top"
@@ -43,17 +45,8 @@
                         field: "_mvad_rawlog_dsp",
                         name: "dsp"
                     },{
-                      field: "_mvad_rawlog_dsp_parquet",
-                      name: "dsp-parquet"
-                    },{
-                      field: "_mvad_rawlog_dsp_parquet_hourly",
-                      name: "dsp-parquet-hourly"
-                    },{
                       field: "_mvad_rawlog_dsp_extended",
                       name: "dsp-extended"
-                    },{
-                      field: "_mvad_rawlog_dsp_extended_parquet_hourly",
-                      name: "dsp-extended-parquet-hourly"
                     },{
                         field: "_mvad_rawlog_dsp_logfilter",
                         name: "dsp-logfilter"
@@ -64,26 +57,14 @@
                         field: "_mvad_rawlog_exchange",
                         name: "exchange"
                     },{
-                      field: "_mvad_rawlog_exchange_parquet_hourly",
-                      name: "exchange-parquet-hourly"
-                    },{
                         field: "_mvad_rawlog_exchange_extended",
                         name: "exchange-extended"
-                    },{
-                      field: "_mvad_rawlog_exchange_extended_parquet_hourly",
-                      name: "exchange-extended-parquet-hourly"
                     },{
                         field: "_mvad_rawlog_ambition",
                         name: "ambition"
                     },{
                         field: "_mvad_rawlog_ambition_sample",
                         name: "ambition-sample"
-                    },{
-                        field: "_mvad_rawlog_ambition_parquet",
-                        name: "ambition-parquet"
-                    },{
-                      field: "_mvad_rawlog_ambition_parquet_hourly",
-                      name: "ambition-parquet-hourly"
                     },{
                         field: "_mvad_rawlog_torpedo",
                         name: "torpedo"
@@ -93,15 +74,6 @@
                     },{
                         field: "_mvad_rawlog_user_behavior",
                         name: "user-behavior"
-                    },{
-                        field: "_mvad_sessionlog_dspan",
-                        name: "dspan"
-                    },{
-                        field: "_mvad_sessionlog_dspan_parquet",
-                        name: "dspan-parquet"
-                    },{
-                        field: "_mvad_sessionlog_dspan_history_parquet",
-                        name: "dspan-history-parquet"
                     }],
             seriesColors: ["DodgerBlue", "DimGray", "FireBrick", "PowderBlue", "Fuchsia", "Gold", "Green", "HotPink", "Indigo", "Orange", "Red", "Teal" , "Aqua", "Brown", "Chartreuse","BlueViolet","DarkBlue","DarkSeaGreen","Pink","MediumSlateBlue","Wheat"],
             categoryAxis: {

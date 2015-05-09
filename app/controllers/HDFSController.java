@@ -207,11 +207,11 @@ public class HDFSController extends Controller {
         ));
     }
 
-    public static Result logSize() {
+    public static Result logSize(String path) {
 
         List<JsonNode> result = new ArrayList<JsonNode>();
 
-        JsonNode logs = duOfPath("/mvad/{rawlog,sessionlog}/*");
+        JsonNode logs = duOfPath(path);
         if (logs.isArray()) {
 
 
@@ -225,11 +225,11 @@ public class HDFSController extends Controller {
                 String dateStr = sdf.format(date);
                 eachday.put("date", dateStr);
 
-                for (JsonNode path : logs) {
-                    String logdate = path.get("pathSuffix").asText();
-                    String fullPath = path.get("fullPath").asText();
-                    String logName = fullPath.substring(0,fullPath.lastIndexOf("/")).replaceAll("/", "_").replaceAll("-","_");
-                    Long size = path.get("size").asLong() / 1024 / 1024 / 1024;
+                for (JsonNode log : logs) {
+                    String logdate = log.get("pathSuffix").asText();
+                    String fullPath = log.get("fullPath").asText();
+                    String logName = fullPath.substring(0,fullPath.lastIndexOf("/")).replaceAll("/", "_").replaceAll("-","_").replace(".","_");
+                    Long size = log.get("size").asLong() / 1024 / 1024 / 1024;
                     if (logdate.endsWith(dateStr)) {
                         eachday.put(logName, size);
                     }
