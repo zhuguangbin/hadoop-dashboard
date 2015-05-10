@@ -96,7 +96,7 @@
                 pageSize: 20
             },
             height: 600,
-//            detailInit: jobHistory,
+            detailInit: jobwatcher,
 //                dataBound: function() {
 //                    this.expandRow(this.tbody.find("tr.k-master-row").first());
 //                },
@@ -176,6 +176,45 @@
                 {command: { text: "watch", click: watchJob }, title: "WATCH", width: "80px" }
             ]
         });
+
+      function jobwatcher(e) {
+
+        $("<div/>").appendTo(e.detailCell).kendoGrid({
+          dataSource: {
+            transport: {
+              read: "/rest/mrv2job/jobwatcher?jobname=" + e.data.jobshortname
+            }
+          },
+          height: 100,
+          columns: [
+            {
+              field: "jobName",
+              title: "jobName",
+              width: 300
+            },
+            {
+              field: "jobOwner",
+              title: "jobOwner",
+              width: 100
+            },
+            {
+              field: "jobOwnerPhone",
+              title: "jobOwnerPhone",
+              width: 180
+            },
+            {
+              field: "onCallName",
+              title: "onCallName",
+              width: 100
+            },
+            {
+              field: "onCallPhone",
+              title: "onCallPhone",
+              width: 180
+            }
+          ]
+        });
+      };
 
 
       function watchJob(e) {

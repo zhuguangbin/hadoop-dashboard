@@ -66,6 +66,7 @@ GET         /rest/mrv2job/jobstat_last2weeks                 controllers.MRv2Job
 GET         /rest/mrv2job/jobhistory_perday                  controllers.MRv2JobController.jobhistoryPerDay(jobshortname:String, rundate:String)
 GET         /rest/mrv2job/jobhistory                         controllers.MRv2JobController.jobhistory(user:String ?="", queue:String ?="" ,startedTimeBegin:String ?="", startedTimeEnd:String ?="", limit:String ?="", state:String ?="SUCCEEDED")
 GET         /rest/mrv2job/jobconfstat                        controllers.MRv2JobController.jobConfStat(jobname:String ?="", start:String ?= "", end:String ?="")
+GET         /rest/mrv2job/jobwatcher                         controllers.MRv2JobWatcherController.jobWather(jobname:String)
 
 # SparkSQL
 GET         /rest/sparksql/webuiurl                          controllers.SparkSQLJDBCController.getServerWebUIURL()

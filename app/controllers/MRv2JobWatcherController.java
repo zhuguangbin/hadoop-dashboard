@@ -12,7 +12,9 @@ import play.mvc.Result;
 import views.html.mrv2jobwatcher;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static play.data.Form.form;
 
@@ -106,8 +108,8 @@ public class MRv2JobWatcherController extends Controller {
       return ok(mrv2jobwatcher.render(jobwatcherForm.fill(jobWatcher)));
     }
 
-
   }
+
 
   /**
    * Handle the form submission.
@@ -127,6 +129,19 @@ public class MRv2JobWatcherController extends Controller {
         return badRequest(mrv2jobwatcher.render(filledForm));
       }
     }
+  }
+
+  public static Result jobWather(String jobName) {
+
+    List<MRv2JobWatcher> result = new ArrayList<MRv2JobWatcher>();
+
+    MRv2JobWatcher jobWatcher = MRv2JobWatcher.findByJobName(jobName);
+
+    if (jobWatcher != null) {
+      result.add(jobWatcher);
+    }
+
+    return ok(mapper.valueToTree(result));
   }
 
 
