@@ -52,7 +52,7 @@ GET         /rest/mrv1job/longrunningjobs_last24hours        controllers.MRv1Job
 GET         /rest/mrv1job/jobsummary_last2weeks              controllers.MRv1JobController.jobSummaryOfLast2weeks(jobtype:String ?="all")
 GET         /rest/mrv1job/jobstat_last2weeks                 controllers.MRv1JobController.jobStatOfLast2weeks()
 GET         /rest/mrv1job/jobhistory_perday                  controllers.MRv1JobController.jobhistoryPerDay(jobshortname:String, rundate:String)
-GET         /rest/mrv1job/jobconfstat                        controllers.MRv1JobController.jobConfStat(jobname:String ?="", start:String ?= "", end:String ?="")
+GET         /rest/mrv1job/jobinfo                            controllers.MRv1JobController.jobinfo(jobname:String ?="", start:String ?= "", end:String ?="")
 GET         /rest/mrv1job/jobcounters/:jobId                 controllers.MRv1JobController.getJobCounters(jobId:String)
 GET         /rest/mrv1job/tasks/:jobId                       controllers.MRv1JobController.listTasks(jobId:String, orderBy:String ?="startTime", order:String ?="asc")
 GET         /rest/mrv1job/gantt                              controllers.MRv1JobController.gantt(starttime:String,endtime:String,user:String ?="",jobname:String ?="", jobqueue:String ?="", jobstatus:String ?="")
@@ -65,7 +65,7 @@ GET         /rest/mrv2job/jobsummary_last2weeks              controllers.MRv2Job
 GET         /rest/mrv2job/jobstat_last2weeks                 controllers.MRv2JobController.jobStatOfLast2weeks()
 GET         /rest/mrv2job/jobhistory_perday                  controllers.MRv2JobController.jobhistoryPerDay(jobshortname:String, rundate:String)
 GET         /rest/mrv2job/jobhistory                         controllers.MRv2JobController.jobhistory(user:String ?="", queue:String ?="" ,startedTimeBegin:String ?="", startedTimeEnd:String ?="", limit:String ?="", state:String ?="SUCCEEDED")
-GET         /rest/mrv2job/jobconfstat                        controllers.MRv2JobController.jobConfStat(jobname:String ?="", start:String ?= "", end:String ?="")
+GET         /rest/mrv2job/jobinfo                            controllers.MRv2JobController.jobinfo(jobname:String ?="", start:String ?= "", end:String ?="")
 GET         /rest/mrv2job/jobwatcher                         controllers.MRv2JobWatcherController.jobWather(jobname:String)
 
 # SparkSQL

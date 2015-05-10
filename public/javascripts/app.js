@@ -89,9 +89,9 @@ var brewingTools = angular.module('dashboard', ['kendo.directives', 'dashboard.c
                 controller: 'MRv1JobController',
                 templateUrl: '/assets/partial/mrv1job_timeline.html'
             }).
-            when('/mrv1job/jobconf', {
+            when('/mrv1job/jobinfo', {
                 controller: 'MRv1JobController',
-                templateUrl: '/assets/partial/mrv1job_jobconf.html'
+                templateUrl: '/assets/partial/mrv1job_jobinfo.html'
             }).
             when('/mrv2job', {
                 redirectTo: '/mrv2job/overview'
@@ -120,9 +120,9 @@ var brewingTools = angular.module('dashboard', ['kendo.directives', 'dashboard.c
                 controller: 'MRv2JobController',
                 templateUrl: '/assets/partial/mrv2job_timeline.html'
             }).
-            when('/mrv2job/jobconf', {
+            when('/mrv2job/jobinfo', {
               controller: 'MRv1JobController',
-              templateUrl: '/assets/partial/mrv2job_jobconf.html'
+              templateUrl: '/assets/partial/mrv2job_jobinfo.html'
             }).
             when('/yarnapps', {
                 redirectTo: '/yarnapps/overview'

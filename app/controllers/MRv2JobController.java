@@ -163,7 +163,7 @@ public class MRv2JobController extends Controller {
     }
 
   @BodyParser.Of(BodyParser.Json.class)
-  public static Result jobConfStat(String jobname, String start, String end) {
+  public static Result jobinfo(String jobname, String start, String end) {
 
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 

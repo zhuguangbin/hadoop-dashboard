@@ -11,7 +11,7 @@
                         <li><a href="#/mrv1job/failed">Failed</a></li>
                         <li><a href="#/mrv1job/longrunning">LongRunning</a></li>
                         <li><a href="#/mrv1job/timeline">Timeline</a></li>
-                        <li><a href="#/mrv1job/jobconf">Job Conf</a></li>
+                        <li><a href="#/mrv1job/jobinfo">JobInfo</a></li>
                     </ul>
                 </div>
             </div>
@@ -24,7 +24,7 @@
 
                 <button class="submitButton k-button" id="submit">Submit</button>
             </form>
-            <div id="jobconf_stat"></div>
+            <div id="jobinfo"></div>
         </div>
     </div>
 </div>
@@ -80,14 +80,14 @@
             endDate = kendo.toString(end.value(), "yyyy-MM-dd");
             var jobname = $("#jobname").val();
 
-            var grid = $("#jobconf_stat").data("kendoGrid");
+            var grid = $("#jobinfo").data("kendoGrid");
             grid.dataSource.transport.options.read.url = serviceRoot + "?start=" + startDate + "&end=" + endDate + "&jobname="+ jobname;
             grid.dataSource.read();
         }
 
-        var serviceRoot = "/rest/mrv1job/jobconfstat";
+        var serviceRoot = "/rest/mrv1job/jobinfo";
 
-        $("#jobconf_stat").kendoGrid({
+        $("#jobinfo").kendoGrid({
             dataSource: {
                 transport: {
                     read: serviceRoot
