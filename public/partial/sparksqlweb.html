@@ -10,7 +10,7 @@
             <div id="tables" style="height: 250px; overflow: scroll;"></div>
             <p>
 
-            <div id="selected_table" style="font-weight:bold; color: darkred">report.daily_report</div>
+            <div id="selected_table" style="font-weight:bold; color: darkred">mvdw.daily_report</div>
             <p>
 
             <div>Partitions:</div>
@@ -101,7 +101,7 @@
     var partitionsGrid = $("#partitions").kendoGrid({
         dataSource: {
             transport: {
-                read: serviceRoot + "/partitions?db_name=report&table_name=daily_report",
+                read: serviceRoot + "/partitions?db_name=mvdw&table_name=daily_report",
                 dataType: "json"
             }
         },
@@ -118,7 +118,7 @@
     var columnsGrid = $("#columns").kendoGrid({
         dataSource: {
             transport: {
-                read: serviceRoot + "/columns?db_name=report&table_name=daily_report",
+                read: serviceRoot + "/columns?db_name=mvdw&table_name=daily_report",
                 dataType: "json"
             }
         },
