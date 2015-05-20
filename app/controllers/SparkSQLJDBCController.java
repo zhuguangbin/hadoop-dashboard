@@ -74,7 +74,7 @@ public class SparkSQLJDBCController extends Controller {
   }
 
 
-  public static Result runsql() {
+  public static Result runsql(Boolean save) {
 
     DynamicForm request = Form.form().bindFromRequest();
     String sql = request.get("sql").trim();
@@ -91,7 +91,7 @@ public class SparkSQLJDBCController extends Controller {
       histroy.setStartTime(new Date());
       histroy.save();
       // run sql
-      response = executeSQL(sql);
+      response = executeSQL(histroy.getId(), sql, save);
       Logger.info("DONE executing sql : " + sql);
       return ok(response);
     } catch (Exception e) {
@@ -119,7 +119,9 @@ public class SparkSQLJDBCController extends Controller {
   }
 
 
-  public static JsonNode executeSQL(String sql) {
+  public static JsonNode executeSQL(Long execId, String sql, Boolean save) {
+
+    String resulttable = "tmp.result_" + execId;
 
     ObjectNode response = Json.newObject();
 
@@ -130,14 +132,21 @@ public class SparkSQLJDBCController extends Controller {
       conn = cpds.getConnection();
       stmt = conn.createStatement();
 
-      Logger.info("RUNNING SQL : " + sql);
-      rs = stmt.executeQuery(sql);
+      String sqlexec = save ? "CREATE TABLE " + resulttable + " AS " + sql : sql;
+
+      Logger.info("RUNNING SQL : " + sqlexec);
+      rs = stmt.executeQuery(sqlexec);
 
       JsonNode result = resultSet2Json(rs);
       response.put("retcode", 0);
-      response.put("message", "OK");
-      response.put("result", result);
 
+      if (save) {
+        response.put("message", "OK, results saved as table : " + resulttable + ", fetching ...");
+        response.put("resulttable", resulttable);
+      } else {
+        response.put("message", "OK, results are as follows ...");
+        response.put("result", result);
+      }
       return response;
 
     } catch (SQLException se) {
@@ -147,16 +156,16 @@ public class SparkSQLJDBCController extends Controller {
       String message = se.getMessage();
       String[] m = message.split(":");
       String cause = m[0].trim();
-        if ("org.apache.spark.sql.AnalysisException".equals(cause)) {
-          response.put("retcode", 1);
-        } else if ("org.apache.spark.SparkException".equals(cause)) {
-          response.put("retcode", 2);
-        } else if ("org.apache.hadoop.hive.ql.metadata.HiveException".equals(cause) || "org.apache.thrift.transport.TTransportException".equals(cause) || "org.apache.thrift.TApplicationException".equals(cause)) {
-          response.put("retcode", 3);
-        }else {
-          // unknown exception
-          response.put("retcode", 100);
-        }
+      if ("org.apache.spark.sql.AnalysisException".equals(cause)) {
+        response.put("retcode", 1);
+      } else if ("org.apache.spark.SparkException".equals(cause)) {
+        response.put("retcode", 2);
+      } else if ("org.apache.hadoop.hive.ql.metadata.HiveException".equals(cause) || "org.apache.thrift.transport.TTransportException".equals(cause) || "org.apache.thrift.TApplicationException".equals(cause)) {
+        response.put("retcode", 3);
+      } else {
+        // unknown exception
+        response.put("retcode", 100);
+      }
 
       response.put("message", se.getMessage());
 
@@ -231,6 +240,68 @@ public class SparkSQLJDBCController extends Controller {
       }
     }
     return objectNode;
+  }
+
+  public static Result fetchResult(String resulttable) {
+
+    ObjectNode response = Json.newObject();
+
+    Statement stmt = null;
+    ResultSet rs = null;
+    try {
+
+      conn = cpds.getConnection();
+      stmt = conn.createStatement();
+
+      String sqlexec = "SELECT * FROM " + resulttable;
+      Logger.info("RUNNING SQL : " + sqlexec);
+      rs = stmt.executeQuery(sqlexec);
+
+      JsonNode result = resultSet2Json(rs);
+      response.put("retcode", 0);
+      response.put("message", "OK, results fetched back, showing as follows ...");
+      response.put("result", result);
+      return ok(response);
+
+    } catch (SQLException se) {
+      //Handle errors for JDBC
+      se.printStackTrace();
+      Logger.error("SQL Exception: " + se.getMessage());
+      String message = se.getMessage();
+      String[] m = message.split(":");
+      String cause = m[0].trim();
+      if ("org.apache.spark.sql.AnalysisException".equals(cause)) {
+        response.put("retcode", 1);
+      } else if ("org.apache.spark.SparkException".equals(cause)) {
+        response.put("retcode", 2);
+      } else if ("org.apache.hadoop.hive.ql.metadata.HiveException".equals(cause) || "org.apache.thrift.transport.TTransportException".equals(cause) || "org.apache.thrift.TApplicationException".equals(cause)) {
+        response.put("retcode", 3);
+      } else {
+        // unknown exception
+        response.put("retcode", 100);
+      }
+
+      response.put("message", se.getMessage());
+
+      return ok(response);
+
+    } finally {
+      //finally block used to close resources
+      try {
+        if (stmt != null)
+          stmt.close();
+      } catch (SQLException se2) {
+        Logger.error("SQL Exception: " + se2.getLocalizedMessage());
+        se2.printStackTrace();
+      }// nothing we can do
+      try {
+        conn.close();
+      } catch (SQLException e) {
+        Logger.error("SQL Exception: " + e.getLocalizedMessage());
+        e.printStackTrace();
+      }
+    }//end try
+
   }
 
   public static void saveResult(JsonNode result, String filename) {
