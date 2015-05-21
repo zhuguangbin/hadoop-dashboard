@@ -72,9 +72,10 @@ GET         /rest/mrv2job/jobwatcher                         controllers.MRv2Job
 GET         /rest/sparksql/webuiurl                          controllers.SparkSQLJDBCController.getServerWebUIURL()
 POST        /rest/sparksql/runsqljdbc                        controllers.SparkSQLJDBCController.runsql(save:Boolean)
 POST        /rest/sparksql/runsqlcli                         controllers.SparkSQLCLIController.runsql()
-GET         /rest/sparksql/fetchresult                       controllers.SparkSQLJDBCController.fetchResult(resulttable:String)
+GET         /rest/sparksql/fetchresult                       controllers.SparkSQLJDBCController.fetchResult(resulttable:String, limit:String ?="1000")
 GET         /rest/sparksql/history                           controllers.SparkSQLHistoryController.list(user:String ?= null, startedTimeBegin:String ?="", startedTimeEnd:String ?="", retcode:String ?="", orderBy:String ?= "startTime", order:String ?= "desc")
 GET         /rest/sparksql/jobsummary_last2weeks             controllers.SparkSQLHistoryController.jobSummaryOfLast2weeks()
+GET         /rest/sparksql/allresults                        controllers.SparkSQLJDBCController.downloadAllResults(execId:String)
 
 # WebHCat
 GET         /rest/webhcat/databases                          controllers.WebHCatController.databases()

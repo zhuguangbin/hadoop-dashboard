@@ -173,7 +173,8 @@ $(document).ready(function () {
                 title: "Message",
                 width: 300
             },
-            {command: { text: "Show Result", click: showResult }, title: " ", width: "140px" }
+            {command: { text: "Show", click: showResult }, title: "SampleResults", width: "140px" },
+            {command: { text: "Download", click: downloadResult }, title: "AllResults", width: "140px" }
         ]
     });
 });
@@ -325,6 +326,12 @@ function showResult(e) {
                 }
             });
 }
+  function downloadResult(e){
+    e.preventDefault();
+
+    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+    window.open("/rest/sparksql/allresults?execId="+dataItem.id);
+  }
 
 </script>
 
