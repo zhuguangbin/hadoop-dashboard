@@ -356,7 +356,6 @@ public class SparkSQLJDBCController extends Controller {
       int exitCode = shExec.getExitCode();
       Logger.warn("Exit code from command is : " + exitCode);
       String message = shExec.getOutput();
-      System.out.println(message);
 
       Writer writer = null;
 
