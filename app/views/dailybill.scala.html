@@ -32,22 +32,22 @@
                 <tr>
                     <th class="tg-pfc8">Project</th>
                     <th class="tg-pfc8">Date</th>
-                    <th class="tg-pfc8">MRv1 Job Count</th>
-                    <th class="tg-pfc8">MRv1 (RMB)</th>
+                    @*<th class="tg-pfc8">MRv1 Job Count</th>*@
+                    @*<th class="tg-pfc8">MRv1 (RMB)</th>*@
                     <th class="tg-pfc8">MRv2 Job Count</th>
-                    <th class="tg-pfc8">MRv2 (RMB)</th>
-                    <th class="tg-pfc8">Total (RMB)</th>
+                    <th class="tg-pfc8">MRv2 Cost(RMB)</th>
+                    @*<th class="tg-pfc8">Total Cost(RMB)</th>*@
                 </tr>
 
             @for(costofProject <- clusterCosts){
                 <tr>
                     <td class="tg-x1qw">@costofProject.getProject</td>
                     <td class="tg-x1qw">@costofProject.getDate</td>
-                    <td class="tg-x1qw">@costofProject.getMrv1JobCount</td>
-                    <td class="tg-x1qw">@costofProject.getMrv1Cost</td>
+                    @*<td class="tg-x1qw">@costofProject.getMrv1JobCount</td>*@
+                    @*<td class="tg-x1qw">@costofProject.getMrv1Cost</td>*@
                     <td class="tg-x1qw">@costofProject.getMrv2JobCount</td>
                     <td class="tg-x1qw">@costofProject.getMrv2Cost</td>
-                    <td class="tg-x1qw">@costofProject.getTotalCost</td>
+                    @*<td class="tg-x1qw">@costofProject.getTotalCost</td>*@
                 </tr>
             }
             </table>
