@@ -1,0 +1,81 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/mvdw/overview">Overview</a></li>
+                        <li><a href="#/mvdw/ods">ODS</a></li>
+                        <li><a href="#/mvdw/session">Session</a></li>
+                        <li><a href="#/mvdw/db">DB</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+            <div id="mvdw_intro">
+                <img src="/assets/images/mvdw.png">
+                <div>
+
+                        <p>如上图，数据仓库架构与目前的日志处理架构相辅相成，共同组成整个数据栈。MVDW的技术基础是SparkSQL+Parquet， SparkSQL是计算引擎，提供兼容HQL的SQL Interface，而Parquet作为仓库数据的统一存储格式。</p>
+
+
+                        <p>MVDW数据仓库的数据栈可分为以下4层：</p>
+
+
+                        <a name="1-ODS层"></a>
+                        <h3>1. ODS层：<a href="#1-ODS层" class="wiki-anchor"></a></h3>
+
+
+                        <p>基于我们目前系统中的原始日志，包括dsplog/dspextendedlog/exchangelog/exchangeextendedlog/ambitionlog等数据。</p>
+
+
+                        ODS层数据通过parquet-converter每小时Job将原始日志转换成Parquet格式，Schema保持不变（即原来的thrift格式）。<br>为什么不直接采用目前的原始日志，而需要重新ETL转换？原因如下：
+                        <ol>
+                            <li>存储格式： <br>与日志处理架构的原始日志基于LzoThriftBlock不同，仓库的ODS数据采用Parquet格式，一方面可以有效存储（parquet格式的日志Size大约是LzoThriftBlock格式的1/3），另一方面可以利用SparkSQL对于Parquet的优化，大幅提升计算效率（Spark对于Parquet数据可以通过Partition/Column Prune、Row-based FPD等优化来提交查询效率，至少3倍）。</li>
+                            <li>目录结构：<br>原始日志的目录结构是扁平的，而ODS的目录结构是层次化的。<br>以dsplog为例：<br>在原始日志中，以天为单位作为一个目录，该天的所有日志均扁平的放到该目录下，以文件名来定义hour/type/device等信息。<br>而在ODS中，采用层次目录，利用Spark的Dynamic Partition Discovery特性，将date/hour/type/device等作为类似于Hive Partition，作为数据schema的一部分。</li>
+                        </ol>
+
+
+                        <a name="2-Session层"></a>
+                        <h3>2. Session层：<a href="#2-Session层" class="wiki-anchor"></a></h3>
+
+
+                        <p>这一层对应日志处理架构中的sessionlog，是经过数据清洗，反作弊，回溯等手段，ETL后的一份归一化数据。</p>
+
+
+                        <p>Session层数据是基于sessionlog通过parquet-converter每天凌晨转换而来，除了将其转换成parquet格式外，schema与sessionlog不同，在仓库架构中，这一层数据被“拍扁”了并进行了拆分。</p>
+
+
+                        <p>sessionlog中，日志是cookie级别的，即格式是以cookie为key，该cookie的CookieEvents、historyEvents为List value聚合在一起的格式，每一条日志都是该cookie的属性（summary信息，events，historyEvents）<br>而在DW的session层中，数据是event级别的，即每一条日志是一条cookie产生的events。日志被拆分为了三块：<br>1) cookiesummary，将cookie的基本信息如birth, 是否作弊，作弊原因等<br>2) dspan， 即将sessionlog中的cookieEvents flatten后输出，该数据是当天的所有events<br>3) dspan-history， 即将sessionlog中的historyEvents flatten后输出，该数据是前一天2小时内的所有events</p>
+
+
+                        <p>为什么要“拍扁”，而不是直接采用sessionlog的格式？<br>对于仓库来说，整个数据栈应该是金字塔状的，下层为原始记录，日志量大、内容详细，上层数据是面向主题的，即根据不同业务需求从下层数据抽取所需要的数据进行聚合，聚合后日志量小、只包含与该主题相关的信息。而sessionlog这种直接在底层聚合好的，在仓库中，服务各上层业务时，仍然需要展开然后再抽取相关字段，即每一个上层主题在数据聚合时，都要展开一次，这是浪费计算成本的。所以，在session层，数据就直接将sessionlog“拍扁”“展平”。</p>
+
+
+                        <a name="3-DWDB层"></a>
+                        <h3>3. DWDB层：<a href="#3-DWDB层" class="wiki-anchor"></a></h3>
+
+
+                        <p>这一层才是真正意义上的仓库数据，是根据业务需求，定义好表schema，固化在Hive/SparkSQL仓库中的数据。<br>根据不同的业务，分为各个独立的DB，mvdw为主DB，存储基础仓库数据，如每天产出的报表数据，是其他业务数据产出的基础。而其他业务根据自己的需求，在各自的DB下创建生成各自的table。</p>
+
+
+                        <p>这一层数据的来源根据各个业务需求来不同，有可能基于Session层数据，有可能基于线上MySQL数据，也有可能基于外部第三方数据。但为了处理的方便，我们希望将所有依赖数据均入仓库，这样就可以统一用SQL产出数据，而不需要负责的流程。<br>比如目前的BI报表处理流程，有依赖数据库数据，第三方传入数据，其他业务产出的数据。目前的做法是从DB Dump数据、获取第三方数据生成tsv文件，通过pig本地join，上传HDFS，然后利用pig hcatalog再与Hive仓库数据Join处理。</p>
+
+
+                        <p>我们希望这些所有依赖的数据都入仓库，这样就可以统一使用SQL很简单的生成报表数据。而对于复杂的数据处理无法用SQL关系代数来处理的，使用Pig、Spark脚本处理。</p>
+
+
+                        <a name="4-Interface层"></a>
+                        <h4>4. Interface层：<a href="#4-Interface层" class="wiki-anchor"></a></h4>
+
+
+                        <p>数据仓库的目的是为了让所有人更简单的获得数据，与原来日志处理架构不同，仓库暴露的是SQL接口，相对于MR Job、Pig脚本，学习成本低，开发效率高，几乎所有人（包括开发同学和产品、技术支持等同学）都可以Access仓库数据。</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</div>

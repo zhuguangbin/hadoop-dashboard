@@ -1,0 +1,101 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span1">
+            <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#/mvdw/overview">Overview</a></li>
+                        <li><a href="#/mvdw/ods">ODS</a></li>
+                        <li><a href="#/mvdw/session">Session</a></li>
+                        <li><a href="#/mvdw/db">DB</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="span11">
+            <div id="mvdw_db">
+                <div>
+                    <h3>DB层数据说明</h3>
+
+                    DB层是暴漏给用户的以表schema形式的仓库数据，用户可以直接通过SQL来查询。目前主要的数据包括：
+                    <ul>
+                        <li>mediav_base.db</li>
+                        <ul>
+                            <li>d_clickvalue: 主报表</li>
+                            <li>d_realtime_qihu： 奇虎广告主报表</li>
+                        </ul>
+                    </ul>
+
+                    <ul>
+                        <li>mysql.db: 线上MySQL导入的维表数据</li>
+                    </ul>
+
+                    <b>所有表schema定义（表字段、存储格式、partition信息等）可以通过以下命令来查看：</b>
+                    <pre>desc formatted &lt;db&gt;.&lt;tablename&gt;</pre>
+
+                    <p>
+                    <h3>mysql.db 表说明</h3>
+                    <p>
+
+                    mysql.db 表来源于MySQL DB， 每天凌晨全量导入仓库，目前主要用作mediav_base.d_clickvalue的维表。
+
+                    <p>
+                    目前已经入仓库的表数据有：
+
+                    <ul>
+                        <li>mediav_base.adspace</li>
+                    </ul>
+
+                    <ul>
+                        <li>mediav_base.adspace_type</li>
+                    </ul>
+
+                    <ul>
+                        <li>mediav_base.advertiser</li>
+                    </ul>
+
+                    <ul>
+                        <li>mediav_base.banner</li>
+                    </ul>
+
+                    <ul>
+                        <li>mediav_base.campaign</li>
+                    </ul>
+
+                    <ul>
+                        <li>mediav_base.dimension</li>
+                    </ul>
+
+                    <ul>
+                        <li>mediav_base.dsp</li>
+                    </ul>
+
+                    <ul>
+                        <li>mediav_base.exchange_type</li>
+                    </ul>
+
+                    <ul>
+                        <li>mediav_base.industry</li>
+                    </ul>
+
+                    <ul>
+                        <li>mediav_base.location</li>
+                    </ul>
+
+                    <ul>
+                        <li>mediav_base.publisher</li>
+                    </ul>
+
+                    <ul>
+                        <li>mediav_base.solution</li>
+                    </ul>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</div>

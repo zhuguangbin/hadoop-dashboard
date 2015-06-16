@@ -8,7 +8,9 @@ angular.module('dashboard.controllers', [])
                         {url: '/mrv1job',   name: 'MRv1 Jobs'},
                         {url: '/mrv2job',   name: 'MRv2 Jobs'},
                         {url: '/yarnapps',   name: 'Yarn Apps'},
-                        {url: '/sparksqlweb',   name: 'SparkSQL'}
+                        {url: '/sparksqlweb',   name: 'SparkSQL'},
+                        {url: '/mvdw',   name: 'MVDW'},
+                        {url: '/zeppelin',   name: 'Zeppelin'}
                         ];
 
 
@@ -49,4 +51,13 @@ angular.module('dashboard.controllers', [])
   .controller('SparkSQLController', ['$scope', function($scope) {
 
   }])
+
+  .controller('MVDWController', ['$scope', function($scope) {
+
+  }])
+
+  .controller('ZeppelinController', ['$scope', function($scope) {
+
+  }])
+
 

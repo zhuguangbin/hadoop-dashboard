@@ -150,6 +150,29 @@ var brewingTools = angular.module('dashboard', ['kendo.directives', 'dashboard.c
                 controller: 'SparkSQLController',
                 templateUrl: '/assets/partial/sparksqlweb_history_detail.html'
             }).
+            when('/mvdw', {
+                redirectTo: '/mvdw/overview'
+            }).
+            when('/mvdw/overview', {
+                controller: 'MVDWController',
+                templateUrl: '/assets/partial/mvdw_overview.html'
+            }).
+            when('/mvdw/ods', {
+                controller: 'MVDWController',
+                templateUrl: '/assets/partial/mvdw_ods.html'
+            }).
+            when('/mvdw/session', {
+                controller: 'MVDWController',
+                templateUrl: '/assets/partial/mvdw_session.html'
+            }).
+            when('/mvdw/db', {
+                controller: 'MVDWController',
+                templateUrl: '/assets/partial/mvdw_db.html'
+            }).
+            when('/zeppelin', {
+                controller: 'ZeppelinController',
+                templateUrl: '/assets/partial/zeppelin_overview.html'
+            }).
 		    otherwise({
 		      redirectTo: '/'
 		    });
