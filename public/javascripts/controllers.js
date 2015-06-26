@@ -10,7 +10,8 @@ angular.module('dashboard.controllers', [])
                         {url: '/yarnapps',   name: 'Yarn Apps'},
                         {url: '/sparksqlweb',   name: 'SparkSQL'},
                         {url: '/mvdw',   name: 'MVDW'},
-                        {url: '/zeppelin',   name: 'Zeppelin'}
+                        {url: '/zeppelin',   name: 'Zeppelin'},
+                        {url: '/rstudio',   name: 'RStudio'}
                         ];
 
 
@@ -59,5 +60,10 @@ angular.module('dashboard.controllers', [])
   .controller('ZeppelinController', ['$scope', function($scope) {
 
   }])
+
+  .controller('RStudioController', ['$scope', function($scope) {
+
+  }])
+
 
 

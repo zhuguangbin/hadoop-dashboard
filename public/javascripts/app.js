@@ -173,6 +173,10 @@ var brewingTools = angular.module('dashboard', ['kendo.directives', 'dashboard.c
                 controller: 'ZeppelinController',
                 templateUrl: '/assets/partial/zeppelin_overview.html'
             }).
+            when('/rstudio', {
+              controller: 'RStudioController',
+              templateUrl: '/assets/partial/rstudio_overview.html'
+            }).
 		    otherwise({
 		      redirectTo: '/'
 		    });
