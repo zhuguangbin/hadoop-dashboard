@@ -17,7 +17,7 @@ object ApplicationBuild extends Build {
     "com.googlecode.lambdaj" % "lambdaj" % "2.3.3",
     "mysql" % "mysql-connector-java" % "5.1.29",
     "com.mchange" % "c3p0" % "0.9.2.1",
-    "org.spark-project.hive" % "hive-jdbc" % "0.12.0",
+    "org.spark-project.hive" % "hive-jdbc" % "0.13.1" excludeAll( ExclusionRule(organization = "org.apache.avro") ),
     "org.apache.hadoop" % "hadoop-common" % "2.0.0-cdh4.6.0"
   )
 
