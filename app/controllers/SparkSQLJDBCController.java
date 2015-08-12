@@ -51,6 +51,10 @@ public class SparkSQLJDBCController extends Controller {
       cpds.setPassword(PASSWORD);
       cpds.setMaxPoolSize(10);
       cpds.setMinPoolSize(1);
+      cpds.setAcquireIncrement(3);
+      cpds.setCheckoutTimeout(3000);
+      cpds.setIdleConnectionTestPeriod(120);
+      cpds.setMaxIdleTime(3600);
     } catch (PropertyVetoException e) {
       e.printStackTrace();
       Logger.error("ERROR initializing SparkSQL JDBC Connection Pool : " + e.getLocalizedMessage());
