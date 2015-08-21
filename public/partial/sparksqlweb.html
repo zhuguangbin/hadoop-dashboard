@@ -10,7 +10,7 @@
             <div id="tables" style="height: 250px; overflow: scroll;"></div>
             <p>
 
-            <div id="selected_table" style="font-weight:bold; color: darkred">mvdw.daily_report</div>
+            <div id="selected_table" style="font-weight:bold; color: darkred">mvdw.olap_report</div>
             <p>
 
             <div>Partitions:</div>
@@ -31,7 +31,7 @@
                   placeholder="input your SQL here, Ctrl+Enter to Submit"></textarea>
                 Result:
                 <input type="radio" name="saveresult" value="1" checked>Save Table</label>
-                <input type="radio" name="saveresult" value="0">Show Directly</label>
+                <input type="radio" name="saveresult" value="0" disabled>Show Directly</label>
                 &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
                 <label for="resultlimit">Limit : </label>
                 <select id="resultlimit" class="input-small">
@@ -113,7 +113,7 @@
     var partitionsGrid = $("#partitions").kendoGrid({
         dataSource: {
             transport: {
-                read: serviceRoot + "/partitions?db_name=mvdw&table_name=daily_report",
+                read: serviceRoot + "/partitions?db_name=mvdw&table_name=olap_report",
                 dataType: "json"
             }
         },
@@ -130,7 +130,7 @@
     var columnsGrid = $("#columns").kendoGrid({
         dataSource: {
             transport: {
-                read: serviceRoot + "/columns?db_name=mvdw&table_name=daily_report",
+                read: serviceRoot + "/columns?db_name=mvdw&table_name=olap_report",
                 dataType: "json"
             }
         },
