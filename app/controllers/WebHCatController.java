@@ -127,4 +127,25 @@ public class WebHCatController extends Controller {
         );
     }
 
+  public static Result property(final String db_name, final String table_name) {
+
+    return async(
+            WS.url(serviceRoot + "/ddl/database/" + db_name + "/table/" + table_name+"/property")
+                    .setQueryParameter("user.name", "hive")
+                    .get().map(
+                    new Function<WS.Response, Result>() {
+                      public Result apply(WS.Response response) {
+                        JsonNode resp = response.asJson().get("properties");
+
+                        if (resp != null) {
+                          return ok(mapper.valueToTree(resp));
+                        } else {
+                          return ok();
+                        }
+                      }
+                    }
+            )
+    );
+  }
+
 }

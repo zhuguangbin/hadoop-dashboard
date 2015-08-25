@@ -1,0 +1,43 @@
+<div class="container-fluid">
+  <h3>Table Properties:</h3>
+  <div id="properties" style="height: 800px;"></div>
+</div>
+
+<script>
+
+  var properties = $("#properties").kendoGrid({
+    dataSource: {
+      transport: {
+        read: serviceRoot + "/property?db_name=mvdw&table_name=olap_report",
+        dataType: "json"
+      }
+    },
+    resizable: true,
+    columns: [
+      {
+        field: "numFiles",
+        title: "numFiles",
+        width: 50
+      },
+      {
+        field: "numRows",
+        title: "numRows",
+        width: 50
+      },
+      {
+        field: "totalSize",
+        title: "totalSize",
+        width: 100
+      },
+      {
+        field: "rawDataSize",
+        title: "rawDataSize",
+        width: 100
+      }
+    ]
+  });
+
+</script>
+
+
+</div>

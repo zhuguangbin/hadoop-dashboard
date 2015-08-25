@@ -1,426 +1,134 @@
 <div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span3">
-            <!--database & tables-->
-            <p>
+  <div class="row-fluid">
+    <div class="span3">
+      <!--database & tables-->
+      <p>
 
-            <div>Hive Tables:</div>
-            <p>
+      <div>Hive Tables:</div>
+      <p>
 
-            <div id="tables" style="height: 250px; overflow: scroll;"></div>
-            <p>
+      <div id="tables" style="height: 300px; overflow: scroll;"></div>
+      <p>
 
-            <div id="selected_table" style="font-weight:bold; color: darkred">mvdw.olap_report</div>
-            <p>
+      <div id="selected_table" style="font-weight:bold; color: darkred">mvdw.olap_report</div>
+      <p>
 
-            <div>Partitions:</div>
-            <div id="partitions" style="height: 250px;"></div>
-            <p>
+      <div>Partitions:</div>
+      <div id="partitions" style="height: 500px;"></div>
+      <p>
 
-            <div>Table Schema:</div>
-            <div id="columns" style="height: 400px;"></div>
-        </div>
-        <div class="span9">
-            <!-- sql input window-->
-            <form class="form-inline">
-                <button id="runbtn" type="submit" class="btn btn-default">Run SQL</button>
-                <button id="clearbtn" type="reset" class="btn btn-default">Clear</button>
-                <button id="showserver" class="btn btn-default">Server</button>
-                <button id="showhistory" class="btn btn-default">History</button>
-        <textarea id="editor" rows="10" cols="30" style="width:100%;height:200px" class="form-control"
-                  placeholder="input your SQL here, Ctrl+Enter to Submit"></textarea>
-                Result:
-                <input type="radio" name="saveresult" value="1" checked>Save Table</label>
-                <input type="radio" name="saveresult" value="0" disabled>Show Directly</label>
-                &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-                <label for="resultlimit">Limit : </label>
-                <select id="resultlimit" class="input-small">
-                    <option value="1000" selected="selected">1000</option>
-                    <option value="2000">2000</option>
-                    <option value="3000">3000</option>
-                </select>
-            </form>
-
-            <div id="message" class="alert ">
-                Show Result as Follows
-            </div>
-            <div class="row-fluid" id="result"></div>
-        </div>
+      <!--<div>Table Schema:</div>-->
+      <!--<div id="columns" style="height: 400px;"></div>-->
     </div>
+    <div class="span9" id="tabstrip">
+      <ul>
+        <li class="k-state-active">SQL Query</li>
+        <li>Sample</li>
+        <li>Schema</li>
+      </ul>
+    </div>
+  </div>
 </div>
 
-
 <script>
-    var serviceRoot = "/rest/webhcat";
+  $(document).ready(function () {
+    var ts = $("#tabstrip").kendoTabStrip({
+      animation: {open: {effects: "fadeIn"}},
+      contentUrls: [
+        '/assets/partial/sparksqlquery.html',
+        '/assets/partial/tablesamplerows.html',
+        '/assets/partial/tableschema.html',
+      ]
+    }).data('kendoTabStrip');
 
-    function onSelect(e) {
-
-        // table node, list partitions and show columns
-        if (this.parent(e.node)) {
-
-            var table_name = this.text(e.node);
-            var db_name = this.text(this.parent(e.node));
-
-            $("#selected_table").text(db_name + "." + table_name);
-
-            var partitions = $("#partitions").data("kendoGrid");
-            partitions.dataSource.transport.options.read.url = serviceRoot + "/partitions?db_name=" + db_name + "&table_name=" + table_name;
-            partitions.dataSource.read();
-
-            var columns = $("#columns").data("kendoGrid");
-            columns.dataSource.transport.options.read.url = serviceRoot + "/columns?db_name=" + db_name + "&table_name=" + table_name;
-            columns.dataSource.read();
-        }
-
-    }
-
-    var tables = {
-        transport: {
-            read: {
-                url: serviceRoot + "/tables",
-                dataType: "json"
-            }
-        },
-        schema: {
-            model: {
-                id: "table_name",
-                hasChildren: false
-            }
-        }
-    };
-    var dbs = new kendo.data.HierarchicalDataSource({
-        transport: {
-            read: {
-                url: serviceRoot + "/databases",
-                dataType: "json"
-            }
-        },
-        schema: {
-            model: {
-                id: "db_name",
-                hasChildren: true,
-                children: tables
-            }
-        }
-    });
-
-    $("#tables").kendoTreeView({
-        dataSource: dbs,
-        dataTextField: ["db_name", "table_name", "partition_name"],
-        select: onSelect
-    });
-
-    var partitionsGrid = $("#partitions").kendoGrid({
-        dataSource: {
-            transport: {
-                read: serviceRoot + "/partitions?db_name=mvdw&table_name=olap_report",
-                dataType: "json"
-            }
-        },
-        resizable: true,
-        columns: [
-            {
-                field: "partition_name",
-                title: "Partition Name",
-                width: 260
-            }
-        ]
-    });
-
-    var columnsGrid = $("#columns").kendoGrid({
-        dataSource: {
-            transport: {
-                read: serviceRoot + "/columns?db_name=mvdw&table_name=olap_report",
-                dataType: "json"
-            }
-        },
-        resizable: true,
-        columns: [
-            {
-                field: "name",
-                title: "name",
-                width: 50
-            },
-            {
-                field: "type",
-                title: "type",
-                width: 50
-            },
-            {
-                field: "comment",
-                title: "comment",
-                width: 100
-            }
-        ]
-    });
-
+    ts.tabGroup.on('click','li',function(e){
+      ts.reload($(this));
+    })
+  });
 </script>
 
 <script>
+  var serviceRoot = "/rest/webhcat";
 
-    function detectServer() {
-        $.ajax(
-                {
-                    type: 'GET',
-                    url: '/rest/sparksql/webuiurl',
-                    dataType: 'json',
-                    success: function (result, textStatus) {
-                        var retcode = result['retcode']
-                        if (retcode == 0) {
-                            $("#message").html(result['message']);
+  function onSelect(e) {
 
-                        } else {
-                            $("#message").attr('class', 'alert alert-block alert-error');
-                            $("#message").html(result['message']);
-                        }
-                    },
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        $("#message").attr('class', 'alert alert-block alert-danger');
-                        $("#message").html(errorThrown);
-                    }
-                });
+    // table node, list partitions and show columns
+    if (this.parent(e.node)) {
+
+      var table_name = this.text(e.node);
+      var db_name = this.text(this.parent(e.node));
+
+      $("#selected_table").text(db_name + "." + table_name);
+
+      var columns = $("#columns").data("kendoGrid");
+      columns.dataSource.transport.options.read.url = serviceRoot + "/columns?db_name=" + db_name + "&table_name=" + table_name;
+      columns.dataSource.read();
+
+      var partitions = $("#partitions").data("kendoGrid");
+      partitions.dataSource.transport.options.read.url = serviceRoot + "/partitions?db_name=" + db_name + "&table_name=" + table_name;
+      partitions.dataSource.read();
+
     }
 
+  }
 
-</script>
+  var tables = {
+    transport: {
+      read: {
+        url: serviceRoot + "/tables",
+        dataType: "json"
+      }
+    },
+    schema: {
+      model: {
+        id: "table_name",
+        hasChildren: false
+      }
+    }
+  };
+  var dbs = new kendo.data.HierarchicalDataSource({
+    transport: {
+      read: {
+        url: serviceRoot + "/databases",
+        dataType: "json"
+      }
+    },
+    schema: {
+      model: {
+        id: "db_name",
+        hasChildren: true,
+        children: tables
+      }
+    }
+  });
 
-<script>
-    var wnd;
-    $(document).ready(function () {
+  $("#tables").kendoTreeView({
+    dataSource: dbs,
+    dataTextField: ["db_name", "table_name", "partition_name"],
+    select: onSelect
+  });
 
-        var sparksqlserver_webui_url = "";
-
-        detectServer();
-
-        var gridData = [];
-
-        generateGrid(gridData);
-
-        $("#runbtn").click(run);
-        $("#clearbtn").click(clear);
-        $("#showserver").click(showserver);
-        $("#showhistory").click(showhistory);
-        $("#editor").keydown(function (event) {
-            if (event.keyCode == 13 && event.ctrlKey) {
-                $("#runbtn").click();
-            }
-        });
-
-
-        function detectServer() {
-            $.ajax(
-                    {
-                        type: 'GET',
-                        url: '/rest/sparksql/webuiurl',
-                        dataType: 'json',
-                        success: function (result, textStatus) {
-                            var retcode = result['retcode']
-                            if (retcode == 0) {
-                                sparksqlserver_webui_url = result['url'];
-                                $("#message").html(result['message']);
-
-                            } else {
-                                $("#message").attr('class', 'alert alert-block alert-error');
-                                $("#message").html(result['message']);
-                            }
-                        },
-                        error: function (XMLHttpRequest, textStatus, errorThrown) {
-                            $("#message").attr('class', 'alert alert-block alert-danger');
-                            $("#message").html(errorThrown);
-                        }
-                    });
-        }
-
-        function generateGrid(gridData) {
-            var schema = generateSchema(gridData);
-            var grid = $("#result").kendoGrid({
-                toolbar: ["excel"],
-                excel: {
-                    allPages: true,
-                    fileName: "result.xlsx",
-                    filterable: true
-                },
-
-                dataSource: {
-                    data: gridData,
-                    schema: schema,
-                    pageSize: 100
-                },
-                height: 700,
-                resizable: true,
-                groupable: true,
-//                sortable: true,
-                pageable: {
-                    refresh: true,
-                    pageSizes: true,
-                    buttonCount: 5
-                },
-                filterable: {
-                    mode: "row"
-                },
-                columnMenu: true
-            });
-        }
-
-        function generateSchema(gridData) {
-
-            var schema = {};
-            var parseFunction;
-            var dateFields = [];
-
-            var model = generateModel(gridData[0]);
-            if (dateFields.length > 0) {
-                parseFunction = function (response) {
-                    for (var i = 0; i < response.length; i++) {
-                        for (var fieldIndex = 0; fieldIndex < dateFields.length; fieldIndex++) {
-                            var record = response[i];
-                            record[dateFields[fieldIndex]] = kendo.parseDate(record[dateFields[fieldIndex]]);
-                        }
-                    }
-                    return response;
-                };
-            }
-
-            schema.model = model;
-//            schema.parse = parseFunction;
-
-            return schema;
-        }
-
-        function generateModel(gridData) {
-            var model = {};
-            model.id = "ID";
-            var fields = {};
-            for (var property in gridData) {
-                var propType = typeof gridData[property];
-
-                if (propType == "number") {
-                    fields[property] = {
-                        type: "number",
-                        validation: {
-                            required: true
-                        }
-                    };
-                } else if (propType == "boolean") {
-                    fields[property] = {
-                        type: "boolean",
-                        validation: {
-                            required: true
-                        }
-                    };
-//                } else if (propType == "string") {
-//                    var parsedDate = kendo.parseDate(gridData[property]);
-//                    if (parsedDate) {
-//                        fields[property] = {
-//                            type: "date",
-//                            validation: {
-//                                required: true
-//                            }
-//                        };
-//                        dateFields.push(property);
-//                    } else {
-//                        fields[property] = {
-//                            validation: {
-//                                required: true
-//                            }
-//                        };
-//                    }
-                } else {
-                    fields[property] = {
-                        validation: {
-                            required: true
-                        }
-                    };
-                }
-
-            }
-            model.fields = fields;
-
-            return model;
-        }
-
-        function run(e) {
-
-            // destroy grid of last result
-            $('#result').data().kendoGrid.destroy();
-            $('#result').empty();
-
-            var sql = $("#editor").val().trim().split(';')[0];
-            console.log("running SQL: ")
-            console.log(sql);
-
-            var save = $("input[name='saveresult']:checked").val()
-            console.log("saveresult: " + save);
-            var resultlimit = $("#resultlimit").val();
-
-            if (sql != '') {
-
-                $("#message").attr('class', 'alert alert-block alert-info');
-                $("#message").html("Running SQL: " + sql + " <p> Please wait ... <p> See progress <a href='" + sparksqlserver_webui_url + "' target='_blank'><b style='color: red;'>here</b></a>");
-
-                $.ajax(
-                        {
-                            type: 'POST',
-                            url: '/rest/sparksql/runsqljdbc?save='+save,
-                            data: {sql: sql},
-                            dataType: 'json',
-                            success: function (result, textStatus) {
-                                var retcode = result['retcode']
-                                if (retcode == 0) {
-                                    console.log("query OK. ");
-                                    $("#message").attr('class', 'alert alert-block alert-success');
-                                    $("#message").html(result['message']);
-
-                                    if(save == 0){
-                                        console.log("refreshing Grid. ");
-                                        generateGrid(result['result']);
-                                    }else{
-                                        console.log("fetching resulttable. ");
-                                        var resulttable = result['resulttable']
-                                        $.ajax({
-                                            url: "/rest/sparksql/fetchresult?resulttable="+resulttable+"&limit="+resultlimit,
-                                            success: function(tableresult){
-                                                console.log("refreshing Grid with resulttable data ");
-                                                $("#message").attr('class', 'alert alert-block alert-success');
-                                                $("#message").html(tableresult['message']);
-                                                generateGrid(tableresult['result']);
-                                            }
-                                        });
-                                    }
-                                } else {
-                                    $("#message").attr('class', 'alert alert-block alert-error');
-                                    $("#message").html(result['message']);
-                                    generateGrid([]);
-                                }
-                            },
-                            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                                $("#message").attr('class', 'alert alert-block alert-danger');
-                                $("#message").html(errorThrown);
-                                generateGrid([]);
-                            }
-                        });
-
-            } else {
-                $("#message").attr('class', 'alert alert-block');
-                $("#message").html("Please input your SQL");
-            }
-
-        }
-
-        function clear(e) {
-            var editor = $("#editor");
-            editor.val("");
-        }
-
-        function showserver(e) {
-            window.open(sparksqlserver_webui_url, '_blank');
-        }
-
-        function showhistory(e) {
-            window.location = "#/sparksqlweb/history";
-        }
-
-    });
+  var partitionsGrid = $("#partitions").kendoGrid({
+    dataSource: {
+      transport: {
+        read: serviceRoot + "/partitions?db_name=mvdw&table_name=olap_report",
+        dataType: "json"
+      },
+      error: function(e){
+        console.log("error when getting partition ");
+        $('#partitions').data().kendoGrid.destroy();
+        $('#partitions').empty();
+      }
+    },
+    resizable: true,
+    columns: [
+      {
+        field: "partition_name",
+        title: "Partition Name",
+        width: 260
+      }
+    ]
+  });
 
 </script>
 

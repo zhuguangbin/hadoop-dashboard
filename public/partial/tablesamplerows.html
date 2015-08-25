@@ -1,0 +1,173 @@
+<div class="container-fluid">
+  <div id="samplerows_messagebar" class="alert alert-block alert-success"></div>
+  <div id="samplerows" style="height: 800px;"></div>
+</div>
+
+<script>
+
+
+    var gridData = [];
+
+    generateGrid(gridData);
+    run();
+
+    $("#refresh").click(run);
+
+    function generateGrid(gridData) {
+      var schema = generateSchema(gridData);
+      var grid = $("#samplerows").kendoGrid({
+        toolbar: ["excel"],
+        excel: {
+          allPages: true,
+          fileName: "result.xlsx",
+          filterable: true
+        },
+
+        dataSource: {
+          data: gridData,
+          schema: schema,
+          pageSize: 100
+        },
+        height: 700,
+        resizable: true,
+        groupable: true,
+//                sortable: true,
+        pageable: {
+          refresh: true,
+          pageSizes: true,
+          buttonCount: 5
+        },
+        filterable: {
+          mode: "row"
+        },
+        columnMenu: true
+      });
+    }
+
+    function generateSchema(gridData) {
+
+      var schema = {};
+      var parseFunction;
+      var dateFields = [];
+
+      var model = generateModel(gridData[0]);
+      if (dateFields.length > 0) {
+        parseFunction = function (response) {
+          for (var i = 0; i < response.length; i++) {
+            for (var fieldIndex = 0; fieldIndex < dateFields.length; fieldIndex++) {
+              var record = response[i];
+              record[dateFields[fieldIndex]] = kendo.parseDate(record[dateFields[fieldIndex]]);
+            }
+          }
+          return response;
+        };
+      }
+
+      schema.model = model;
+//            schema.parse = parseFunction;
+
+      return schema;
+    }
+
+    function generateModel(gridData) {
+      var model = {};
+      model.id = "ID";
+      var fields = {};
+      for (var property in gridData) {
+        var propType = typeof gridData[property];
+
+        if (propType == "number") {
+          fields[property] = {
+            type: "number",
+            validation: {
+              required: true
+            }
+          };
+        } else if (propType == "boolean") {
+          fields[property] = {
+            type: "boolean",
+            validation: {
+              required: true
+            }
+          };
+//                } else if (propType == "string") {
+//                    var parsedDate = kendo.parseDate(gridData[property]);
+//                    if (parsedDate) {
+//                        fields[property] = {
+//                            type: "date",
+//                            validation: {
+//                                required: true
+//                            }
+//                        };
+//                        dateFields.push(property);
+//                    } else {
+//                        fields[property] = {
+//                            validation: {
+//                                required: true
+//                            }
+//                        };
+//                    }
+        } else {
+          fields[property] = {
+            validation: {
+              required: true
+            }
+          };
+        }
+
+      }
+      model.fields = fields;
+
+      return model;
+    }
+
+    function run(e) {
+
+      // destroy grid of last result
+      $('#samplerows').data().kendoGrid.destroy();
+      $('#samplerows').empty();
+
+      var selected_table = document.getElementById("selected_table").innerText;
+
+      $('#samplerows_messagebar').html("Sample Rows of Table : " + selected_table);
+
+      var sql = "select * from " + selected_table + " limit 10"
+      console.log("running SQL: ")
+      console.log(sql);
+
+
+      $.ajax(
+              {
+                type: 'POST',
+                url: '/rest/sparksql/runsqljdbc?save=0',
+                data: {sql: sql},
+                dataType: 'json',
+                success: function (result, textStatus) {
+                  var retcode = result['retcode']
+                  if (retcode == 0) {
+                    console.log("query OK. ");
+                    $("#message").attr('class', 'alert alert-block alert-success');
+                    $("#message").html(result['message']);
+
+                    console.log("refreshing Grid. ");
+                    generateGrid(result['result']);
+                  } else {
+                    $("#message").attr('class', 'alert alert-block alert-error');
+                    $("#message").html(result['message']);
+                    generateGrid([]);
+                  }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                  $("#message").attr('class', 'alert alert-block alert-danger');
+                  $("#message").html(errorThrown);
+                  generateGrid([]);
+                }
+              });
+
+    }
+
+
+
+</script>
+
+</div>

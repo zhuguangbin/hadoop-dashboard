@@ -82,3 +82,4 @@ GET         /rest/webhcat/databases                          controllers.WebHCat
 GET         /rest/webhcat/tables                             controllers.WebHCatController.tables(db_name:String)
 GET         /rest/webhcat/partitions                         controllers.WebHCatController.partitions(db_name:String,table_name:String)
 GET         /rest/webhcat/columns                            controllers.WebHCatController.columns(db_name:String,table_name:String)
+GET         /rest/webhcat/property                           controllers.WebHCatController.property(db_name:String,table_name:String)

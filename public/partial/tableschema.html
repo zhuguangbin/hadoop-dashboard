@@ -1,0 +1,47 @@
+<div class="container-fluid">
+  <div id="tableschema_messagebar" class="alert alert-block alert-success"></div>
+  <div id="columns" style="height: 800px;"></div>
+</div>
+
+
+<script>
+
+  var selected_table = document.getElementById("selected_table").innerText;
+  $('#tableschema_messagebar').html("Schema of Table : " + selected_table);
+
+  var db_table = selected_table.split('.');
+  var db = db_table[0];
+  var table = db_table[1];
+
+  var columnsGrid = $("#columns").kendoGrid({
+    dataSource: {
+      transport: {
+        read: serviceRoot + "/columns?db_name="+db+"&table_name="+table,
+        dataType: "json"
+      }
+    },
+    resizable: true,
+    columns: [
+      {
+        field: "name",
+        title: "name",
+        width: 50
+      },
+      {
+        field: "type",
+        title: "type",
+        width: 50
+      },
+      {
+        field: "comment",
+        title: "comment",
+        width: 100
+      }
+    ]
+  });
+
+
+</script>
+
+
+</div>
