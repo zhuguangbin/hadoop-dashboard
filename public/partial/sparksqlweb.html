@@ -7,7 +7,7 @@
       <div>Hive Tables:</div>
       <p>
 
-      <div id="tables" style="height: 300px; overflow: scroll;"></div>
+      <div id="tables" style="height: 400px; overflow: scroll;"></div>
       <p>
 
       <div id="selected_table" style="font-weight:bold; color: darkred">mvdw.olap_report</div>
@@ -60,13 +60,13 @@
 
       $("#selected_table").text(db_name + "." + table_name);
 
-      var columns = $("#columns").data("kendoGrid");
-      columns.dataSource.transport.options.read.url = serviceRoot + "/columns?db_name=" + db_name + "&table_name=" + table_name;
-      columns.dataSource.read();
-
       var partitions = $("#partitions").data("kendoGrid");
       partitions.dataSource.transport.options.read.url = serviceRoot + "/partitions?db_name=" + db_name + "&table_name=" + table_name;
       partitions.dataSource.read();
+
+      var columns = $("#columns").data("kendoGrid");
+      columns.dataSource.transport.options.read.url = serviceRoot + "/columns?db_name=" + db_name + "&table_name=" + table_name;
+      columns.dataSource.read();
 
     }
 
